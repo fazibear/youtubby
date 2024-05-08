@@ -3,6 +3,8 @@ use tray_icon::{
     Icon, TrayIcon, TrayIconBuilder,
 };
 
+use crate::assets;
+
 pub struct TrayHandler {
     menu: Menu,
     icon: TrayIcon,
@@ -13,13 +15,16 @@ impl TrayHandler {
         let menu = Menu::new();
 
         let quit_i = MenuItem::new("Quit", true, None);
+        let (icon_data, icon_width, icon_height) = assets::get_image(assets::LOGO);
+        let icon = tray_icon::menu::Icon::from_rgba(icon_data, icon_width, icon_height).unwrap();
 
         menu.append_items(&[
             &PredefinedMenuItem::about(
                 None,
                 Some(AboutMetadata {
-                    name: Some("tao".to_string()),
-                    copyright: Some("Copyright tao".to_string()),
+                    name: Some("Youtubby".to_string()),
+                    copyright: Some("Copyright 2024".to_string()),
+                    icon: Some(icon),
                     ..Default::default()
                 }),
             ),
@@ -28,10 +33,14 @@ impl TrayHandler {
         ])
         .unwrap();
 
+        let (icon_data, icon_width, icon_height) = assets::get_image(assets::ICON);
+
+        let icon_data = Icon::from_rgba(icon_data, icon_width, icon_height).unwrap();
+
         let icon = TrayIconBuilder::new()
             .with_tooltip("system-tray - tray icon library!")
             .with_menu(Box::new(menu.clone()))
-            .with_icon(Self::load_icon())
+            .with_icon(icon_data)
             .build()
             .unwrap();
 
@@ -39,17 +48,4 @@ impl TrayHandler {
     }
 
     pub fn try_recv(&self) {}
-
-    fn load_icon() -> Icon {
-        let path = concat!(env!("CARGO_MANIFEST_DIR"), "/assets/icon.png");
-        let (icon_rgba, icon_width, icon_height) = {
-            let image = image::open(path)
-                .expect("Failed to open icon path")
-                .into_rgba8();
-            let (width, height) = image.dimensions();
-            let rgba = image.into_raw();
-            (rgba, width, height)
-        };
-        Icon::from_rgba(icon_rgba, icon_width, icon_height).expect("Failed to open icon")
-    }
 }

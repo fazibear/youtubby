@@ -1,3 +1,4 @@
+mod assets;
 mod key_handler;
 mod tray_handler;
 mod window_handler;
