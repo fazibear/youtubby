@@ -1,0 +1,14 @@
+[package]
+name = "youtubby"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+wry = "0.39.3"
+tao = "0.28"
+tray-icon = "0.13.5"
+muda = "0.13.1"
+global-hotkey = "0.5.3"
+image = "0.25.1"
