@@ -17,6 +17,6 @@ fn main() -> wry::Result<()> {
     event_loop.run(move |event, _, control_flow| {
         key_handler.try_recv(&window_handler);
         window_handler.try_recv(control_flow, event);
-        tray_handler.try_recv();
+        tray_handler.try_recv(control_flow);
     })
 }
