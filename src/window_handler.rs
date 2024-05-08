@@ -1,5 +1,5 @@
 use tao::{
-    dpi::{PhysicalSize, Size},
+    dpi::PhysicalSize,
     event::{Event, WindowEvent},
     event_loop::{ControlFlow, EventLoop},
     platform::macos::WindowBuilderExtMacOS,
@@ -19,8 +19,8 @@ impl WindowHandler {
         let (icon, icon_width, icon_height) = assets::get_image(assets::ICON);
         let window = WindowBuilder::new()
             .with_inner_size(PhysicalSize::new(1024, 2048))
-            .with_titlebar_transparent(true)
-            .with_fullsize_content_view(true)
+            //.with_titlebar_transparent(true)
+            //.with_fullsize_content_view(true)
             .with_title_hidden(true)
             .with_window_icon(Some(
                 Icon::from_rgba(icon, icon_width, icon_height).unwrap(),

@@ -1,3 +1,4 @@
+use muda::MenuEvent;
 use tray_icon::{
     menu::{AboutMetadata, Menu, MenuItem, PredefinedMenuItem},
     Icon, TrayIcon, TrayIconBuilder,
@@ -23,7 +24,9 @@ impl TrayHandler {
                 None,
                 Some(AboutMetadata {
                     name: Some("Youtubby".to_string()),
+                    version: Some("0.1".to_string()),
                     copyright: Some("Copyright 2024".to_string()),
+                    website: Some("https://youtubby.fazibear.me".to_string()),
                     icon: Some(icon),
                     ..Default::default()
                 }),
@@ -44,6 +47,7 @@ impl TrayHandler {
             .build()
             .unwrap();
 
+        let channel = MenuEvent::receiver();
         TrayHandler { menu, icon }
     }
 

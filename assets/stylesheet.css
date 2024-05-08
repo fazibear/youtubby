@@ -1,18 +1,26 @@
 html {
   overflow: hidden !important;
   height: 100% !important;
+  width: 100% !important;
 }
 
 body {
   overscroll-behavior: none !important;
   height: 100% !important;
-  overflow: auto !important;
+  width: 100% !important;
+  overflow: auto auto !important;
 }
 
-ytmusic-nav-bar {
-  margin-top: 15px;
+ytmusic-carousel-shelf-renderer {
+  margin-bottom: 0 !important;
 }
 
-#guide-content {
-  padding-top: 15px;
+
+iron-selector::-webkit-scrollbar {
+  display: none;
+}
+
+ytmusic-chip-cloud-chip-renderer {
+  padding-top: 0px !important;
+  padding-bottom: 0px !important;
 }
