@@ -1,7 +1,6 @@
-use image::{DynamicImage, ImageBuffer, Rgba};
-
 pub const INIT_SCRIPT: &str =
     concat!(
+    include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/assets/scripts.js")),
     "window.addEventListener('load', () => {document.head.insertAdjacentHTML('beforeend',`<style>",
     include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/assets/stylesheet.css")),
     "</style>`);});"
