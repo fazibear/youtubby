@@ -33,12 +33,12 @@ impl TrayHandler {
         if let Ok(TrayIconEvent {
             id: TrayIconId(id),
             click_type: ClickType::Left,
-            position,
+            icon_rect,
             ..
         }) = self.channel.try_recv()
         {
             if &id == "0" {
-                window.show_hide(position);
+                window.show_hide(icon_rect.position);
             }
         }
     }
