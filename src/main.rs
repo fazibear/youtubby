@@ -6,7 +6,7 @@ mod window_handler;
 
 use key_handler::KeyHandler;
 use menu_handler::MenuHandler;
-use tao::event_loop::EventLoop;
+use tao::event_loop::{ControlFlow, EventLoop};
 use tray_handler::TrayHandler;
 use window_handler::WindowHandler;
 
@@ -18,9 +18,11 @@ fn main() -> wry::Result<()> {
     let tray_handler = TrayHandler::new(&menu_handler);
 
     event_loop.run(move |event, _, control_flow| {
-        key_handler.try_recv(&window_handler);
+        *control_flow = ControlFlow::Wait;
+
         window_handler.try_recv(control_flow, event);
-        tray_handler.try_recv(control_flow);
+        key_handler.try_recv(&window_handler);
+        tray_handler.try_recv(&window_handler, control_flow);
         menu_handler.try_recv(control_flow);
     })
 }
