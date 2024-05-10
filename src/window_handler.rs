@@ -2,10 +2,12 @@ use tao::{
     dpi::{PhysicalPosition, PhysicalSize},
     event::{Event, WindowEvent},
     event_loop::{ControlFlow, EventLoop},
-    platform::macos::{EventLoopExtMacOS, WindowBuilderExtMacOS},
     window::{Icon, Window, WindowBuilder},
 };
 use wry::{WebView, WebViewBuilder};
+
+#[cfg(target_os = "macos")]
+use tao::platform::macos::{EventLoopExtMacOS, WindowBuilderExtMacOS};
 
 use crate::assets;
 
@@ -19,6 +21,7 @@ pub static WINDOW_HEIGHT: u32 = 1536;
 
 impl WindowHandler {
     pub fn new(event_loop: &mut EventLoop<()>) -> WindowHandler {
+        #[cfg(target_os = "macos")]
         event_loop.set_activation_policy(tao::platform::macos::ActivationPolicy::Accessory);
 
         let (icon, icon_width, icon_height) = assets::get_image(assets::ICON);
