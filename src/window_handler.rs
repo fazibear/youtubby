@@ -2,7 +2,7 @@ use tao::{
     dpi::{PhysicalPosition, PhysicalSize},
     event::{Event, WindowEvent},
     event_loop::{ControlFlow, EventLoop},
-    platform::macos::WindowBuilderExtMacOS,
+    platform::macos::{EventLoopExtMacOS, WindowBuilderExtMacOS},
     window::{Icon, Window, WindowBuilder},
 };
 use wry::{WebView, WebViewBuilder};
@@ -18,7 +18,9 @@ pub static WINDOW_WIDTH: u32 = 896;
 pub static WINDOW_HEIGHT: u32 = 1536;
 
 impl WindowHandler {
-    pub fn new(event_loop: &EventLoop<()>) -> WindowHandler {
+    pub fn new(event_loop: &mut EventLoop<()>) -> WindowHandler {
+        event_loop.set_activation_policy(tao::platform::macos::ActivationPolicy::Accessory);
+
         let (icon, icon_width, icon_height) = assets::get_image(assets::ICON);
         let window = WindowBuilder::new()
             .with_inner_size(PhysicalSize::new(WINDOW_WIDTH, WINDOW_HEIGHT))

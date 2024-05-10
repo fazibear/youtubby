@@ -11,9 +11,9 @@ use tray_handler::TrayHandler;
 use window_handler::WindowHandler;
 
 fn main() -> wry::Result<()> {
-    let event_loop = EventLoop::new();
+    let mut event_loop = EventLoop::new();
     let key_handler = KeyHandler::new().register_keys();
-    let window_handler = WindowHandler::new(&event_loop);
+    let window_handler = WindowHandler::new(&mut event_loop);
     let menu_handler = MenuHandler::new();
     let tray_handler = TrayHandler::new(&menu_handler);
 
