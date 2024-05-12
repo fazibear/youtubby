@@ -4,8 +4,8 @@ use std::env;
 use std::fs;
 use std::path::Path;
 
-fn main() -> std::io::Result<()> {
-    build_macos_app()
+fn main() {
+    //    build_macos_app()
 }
 
 fn build_macos_app() -> std::io::Result<()> {
