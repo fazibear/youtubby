@@ -1,8 +1,8 @@
-use muda::MenuId;
-use tao::event_loop::ControlFlow;
-use tray_icon::menu::{
-    AboutMetadata, Menu, MenuEvent, MenuEventReceiver, MenuItem, PredefinedMenuItem,
+use muda::{
+    AboutMetadata, CheckMenuItem, Menu, MenuEvent, MenuEventReceiver, MenuId, MenuItem,
+    PredefinedMenuItem,
 };
+use tao::event_loop::ControlFlow;
 
 use crate::assets;
 
@@ -21,6 +21,7 @@ impl MenuHandler {
         let icon = tray_icon::menu::Icon::from_rgba(icon_data, icon_width, icon_height).unwrap();
 
         menu.append_items(&[
+            &CheckMenuItem::with_id("check-custom-1", "Check Custom 1", true, true, None),
             &PredefinedMenuItem::about(
                 None,
                 Some(AboutMetadata {

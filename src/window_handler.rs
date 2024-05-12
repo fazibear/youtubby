@@ -7,10 +7,14 @@ use tao::{
 };
 use wry::{http::Request, WebView, WebViewBuilder};
 
+use crate::assets;
+
 #[cfg(target_os = "macos")]
 use tao::platform::macos::{EventLoopExtMacOS, WindowBuilderExtMacOS};
-
-use crate::assets;
+#[cfg(target_os = "linux")]
+use tao::platform::unix::WindowExtUnix;
+#[cfg(target_os = "windows")]
+use tao::platform::windows::{EventLoopBuilderExtWindows, WindowExtWindows};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct PlayerState {
