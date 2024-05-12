@@ -19,3 +19,23 @@ function PlayPauseClick() {
     PlayAll();
   }
 }
+
+function Checker(){
+  let metadata = navigator.mediaSession.metadata;
+  if(!metadata){ return }
+  meta = JSON.stringify({
+    artist: metadata.artist,
+    title: metadata.title,
+    album: metadata.album,
+    state: navigator.mediaSession.playbackState
+  })
+  if(meta !== navigator.oldmeta) {
+    navigator.oldmeta = meta;
+    window.ipc.postMessage(meta);
+  }
+}
+
+setInterval(Checker, 250);
+
+
+//ytmusic-player-bar -> is-mweb-player-page-modernization-enabled

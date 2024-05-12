@@ -6,12 +6,12 @@ mod window_handler;
 
 use key_handler::KeyHandler;
 use menu_handler::MenuHandler;
-use tao::event_loop::{ControlFlow, EventLoop};
+use tao::event_loop::{ControlFlow, EventLoopBuilder};
 use tray_handler::TrayHandler;
 use window_handler::WindowHandler;
 
 fn main() -> wry::Result<()> {
-    let mut event_loop = EventLoop::new();
+    let mut event_loop = EventLoopBuilder::<window_handler::UserEvent>::with_user_event().build();
     let key_handler = KeyHandler::new().register_keys();
     let window_handler = WindowHandler::new(&mut event_loop);
     let menu_handler = MenuHandler::new();

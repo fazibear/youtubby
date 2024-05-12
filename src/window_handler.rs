@@ -1,15 +1,29 @@
+use serde::{Deserialize, Serialize};
 use tao::{
     dpi::{PhysicalPosition, PhysicalSize},
     event::{Event, WindowEvent},
     event_loop::{ControlFlow, EventLoop},
     window::{Icon, Window, WindowBuilder},
 };
-use wry::{WebView, WebViewBuilder};
+use wry::{http::Request, WebView, WebViewBuilder};
 
 #[cfg(target_os = "macos")]
 use tao::platform::macos::{EventLoopExtMacOS, WindowBuilderExtMacOS};
 
 use crate::assets;
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct PlayerState {
+    title: String,
+    artist: String,
+    album: String,
+    state: String,
+}
+
+#[derive(Debug)]
+pub enum UserEvent {
+    PlayerStateUpdated(PlayerState),
+}
 
 pub struct WindowHandler {
     pub window: Window,
@@ -20,7 +34,7 @@ pub static WINDOW_WIDTH: u32 = 896;
 pub static WINDOW_HEIGHT: u32 = 1536;
 
 impl WindowHandler {
-    pub fn new(event_loop: &mut EventLoop<()>) -> WindowHandler {
+    pub fn new(event_loop: &mut EventLoop<UserEvent>) -> WindowHandler {
         #[cfg(target_os = "macos")]
         event_loop.set_activation_policy(tao::platform::macos::ActivationPolicy::Accessory);
 
@@ -59,29 +73,33 @@ impl WindowHandler {
             let vbox = window.default_vbox().unwrap();
             WebViewBuilder::new_gtk(vbox)
         };
+        let proxy = event_loop.create_proxy();
+
+        let ipc = move |req: Request<String>| {
+            let p: PlayerState = serde_json::from_str(req.body()).unwrap();
+            proxy.send_event(UserEvent::PlayerStateUpdated(p)).unwrap();
+        };
 
         let webview = builder
         .with_user_agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36")
         .with_url("https://music.youtube.com")
         .with_devtools(true)
         .with_initialization_script(assets::INIT_SCRIPT)
+        .with_ipc_handler(ipc)
         .build()
         .unwrap();
 
         WindowHandler { window, webview }
     }
 
-    pub fn try_recv(&self, control_flow: &mut ControlFlow, event: Event<()>) {
-        match event {
-            Event::WindowEvent {
-                event: WindowEvent::CloseRequested,
-                ..
-            } => *control_flow = ControlFlow::Exit,
-            Event::WindowEvent {
-                event: WindowEvent::Focused(false),
-                ..
-            } => self.window.set_visible(false),
-            _ => {} //println!("{:?}", event),
+    pub fn try_recv(&self, control_flow: &mut ControlFlow, event: Event<UserEvent>) {
+        *control_flow = ControlFlow::Wait;
+        if let Event::WindowEvent { event, .. } = event {
+            match event {
+                WindowEvent::CloseRequested => *control_flow = ControlFlow::Exit,
+                WindowEvent::Focused(false) => self.window.set_visible(false),
+                _ => {}
+            }
         }
     }
 
