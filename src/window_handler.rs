@@ -1,3 +1,5 @@
+use global_hotkey::{GlobalHotKeyEvent, HotKeyState};
+use muda::MenuEvent;
 use serde::{Deserialize, Serialize};
 use tao::{
     dpi::{PhysicalPosition, PhysicalSize},
@@ -5,6 +7,7 @@ use tao::{
     event_loop::{ControlFlow, EventLoop},
     window::{Icon, Window, WindowBuilder},
 };
+use tray_icon::TrayIconEvent;
 use wry::{http::Request, WebView, WebViewBuilder};
 
 use crate::assets;
@@ -27,6 +30,9 @@ pub struct PlayerState {
 #[derive(Debug)]
 pub enum UserEvent {
     PlayerStateUpdated(PlayerState),
+    MenuEvent(MenuEvent),
+    HotKeyEvent(GlobalHotKeyEvent),
+    TrayIconEvent(TrayIconEvent),
 }
 
 pub struct WindowHandler {
@@ -97,13 +103,31 @@ impl WindowHandler {
     }
 
     pub fn try_recv(&self, control_flow: &mut ControlFlow, event: Event<UserEvent>) {
-        *control_flow = ControlFlow::Wait;
         if let Event::WindowEvent { event, .. } = event {
             match event {
                 WindowEvent::CloseRequested => *control_flow = ControlFlow::Exit,
                 WindowEvent::Focused(false) => self.window.set_visible(false),
                 _ => {}
             }
+        }
+    }
+
+    pub fn on_event(&self, event: &Event<UserEvent>) {
+        match event {
+            Event::WindowEvent {
+                event: WindowEvent::Focused(false),
+                ..
+            } => self.window.set_visible(false),
+
+            // Event::UserEvent(UserEvent::HotKeyEvent(GlobalHotKeyEvent {
+            //     id: crate::key_handler::KeyHandler::play_pause_key(),
+            //     state: HotKeyState::Pressed,
+            // })) => {
+            //     if let Some(&js) = self.keys.get(&event.id) {
+            //         self.webview.evaluate_script("PlayPauseClick()").unwrap();
+            //     }
+            // }
+            _ => {}
         }
     }
 

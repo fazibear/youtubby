@@ -1,22 +1,27 @@
-use tao::event_loop::ControlFlow;
+use tao::event::Event;
+use tao::event_loop::{ControlFlow, EventLoop, EventLoopProxy};
 use tray_icon::{
     ClickType, Icon, TrayIcon, TrayIconBuilder, TrayIconEvent, TrayIconEventReceiver, TrayIconId,
 };
 
-use crate::window_handler::WindowHandler;
+use crate::window_handler::{UserEvent, WindowHandler};
 use crate::{assets, menu_handler::MenuHandler};
 
 pub struct TrayHandler {
-    _icon: TrayIcon,
+    icon: TrayIcon,
     channel: &'static TrayIconEventReceiver,
+    event_loop_proxy: &'static EventLoopProxy<UserEvent>,
 }
 
 impl TrayHandler {
-    pub fn new(menu_handler: &MenuHandler) -> TrayHandler {
+    pub fn new(
+        event_loop_proxy: &EventLoopProxy<UserEvent>,
+        menu_handler: &MenuHandler,
+    ) -> TrayHandler {
         let (icon_data, icon_width, icon_height) = assets::get_image(assets::ICON);
         let icon_data = Icon::from_rgba(icon_data, icon_width, icon_height).unwrap();
 
-        let _icon = TrayIconBuilder::new()
+        let icon = TrayIconBuilder::new()
             .with_id("0")
             .with_menu(Box::new(menu_handler.menu.clone()))
             .with_menu_on_left_click(false)
@@ -26,20 +31,20 @@ impl TrayHandler {
 
         let channel = TrayIconEvent::receiver();
 
-        Self { channel, _icon }
-    }
-
-    pub fn try_recv(&self, window: &WindowHandler, _control_flow: &mut ControlFlow) {
-        if let Ok(TrayIconEvent {
-            id: TrayIconId(id),
-            click_type: ClickType::Left,
-            icon_rect,
-            ..
-        }) = self.channel.try_recv()
-        {
-            if &id == "0" {
-                window.show_hide(icon_rect.position);
-            }
+        Self {
+            channel,
+            icon,
+            event_loop_proxy,
         }
     }
+
+    pub fn resend(&self) {
+        if let Ok(event) = self.channel.try_recv() {
+            self.event_loop_proxy
+                .send_event(UserEvent::TrayIconEvent(event))
+                .unwrap();
+        }
+    }
+
+    pub fn on_event(&self, event: &Event<UserEvent>) {}
 }
