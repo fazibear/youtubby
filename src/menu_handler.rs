@@ -1,10 +1,8 @@
+use crate::assets;
 use muda::{
     AboutMetadata, CheckMenuItem, Menu, MenuEvent, MenuEventReceiver, MenuId, MenuItem,
     PredefinedMenuItem,
 };
-use tao::event_loop::ControlFlow;
-
-use crate::assets;
 
 pub struct MenuHandler {
     pub channel: &'static MenuEventReceiver,
@@ -41,13 +39,5 @@ impl MenuHandler {
         let channel = MenuEvent::receiver();
 
         Self { channel, menu }
-    }
-
-    pub fn try_recv(&self, control_flow: &mut ControlFlow) {
-        if let Ok(event) = self.channel.try_recv() {
-            if event.id == "quit" {
-                *control_flow = ControlFlow::Exit;
-            }
-        }
     }
 }

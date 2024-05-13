@@ -8,7 +8,7 @@ fn main() {
     //    build_macos_app()
 }
 
-fn build_macos_app() -> std::io::Result<()> {
+fn _build_macos_app() -> std::io::Result<()> {
     let root = env::var("CARGO_MANIFEST_DIR").unwrap();
     let build = env::var("PROFILE").unwrap();
     let out_dir = Path::new(&root).join("target").join(&build);
