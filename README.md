@@ -14,3 +14,5 @@ Goals:
 - [ ] Last.fm support
 - [ ] Adblocker?
 - [ ] MiniPlayer
+- [ ] Media Keys Support
+- [ ] AI (beacuse everything have it)
