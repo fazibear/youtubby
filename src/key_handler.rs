@@ -2,13 +2,13 @@ use std::collections::HashMap;
 
 use global_hotkey::{
     hotkey::{Code, HotKey},
-    GlobalHotKeyEvent, GlobalHotKeyEventReceiver, GlobalHotKeyManager, HotKeyState,
+    GlobalHotKeyEvent, GlobalHotKeyEventReceiver, GlobalHotKeyManager,
 };
 
 pub struct KeyHandler {
-    manager: GlobalHotKeyManager,
-    channel: &'static GlobalHotKeyEventReceiver,
-    keys: HashMap<u32, &'static str>,
+    pub manager: GlobalHotKeyManager,
+    pub channel: &'static GlobalHotKeyEventReceiver,
+    pub keys: HashMap<u32, &'static str>,
 }
 
 impl KeyHandler {
@@ -45,17 +45,5 @@ impl KeyHandler {
     fn register_key(&mut self, key: HotKey, js: &'static str) {
         self.manager.register(key).unwrap();
         self.keys.insert(key.id, js);
-    }
-
-    pub fn try_recv(&self, window_handler: &crate::WindowHandler) {
-        if let Ok(GlobalHotKeyEvent {
-            id,
-            state: HotKeyState::Pressed,
-        }) = self.channel.try_recv()
-        {
-            if let Some(&js) = self.keys.get(&id) {
-                window_handler.webview.evaluate_script(js).unwrap();
-            }
-        }
     }
 }

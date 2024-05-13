@@ -1,8 +1,7 @@
 use serde::{Deserialize, Serialize};
 use tao::{
-    dpi::{PhysicalPosition, PhysicalSize},
-    event::{Event, WindowEvent},
-    event_loop::{ControlFlow, EventLoop},
+    dpi::{LogicalSize, PhysicalPosition, PhysicalSize},
+    event_loop::EventLoop,
     window::{Icon, Window, WindowBuilder},
 };
 use wry::{http::Request, WebView, WebViewBuilder};
@@ -18,10 +17,10 @@ use tao::platform::windows::{EventLoopBuilderExtWindows, WindowExtWindows};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct PlayerState {
-    title: String,
-    artist: String,
-    album: String,
-    state: String,
+    pub title: String,
+    pub artist: String,
+    pub album: String,
+    pub state: String,
 }
 
 #[derive(Debug)]
@@ -45,6 +44,7 @@ impl WindowHandler {
         let (icon, icon_width, icon_height) = assets::get_image(assets::ICON);
         let window = WindowBuilder::new()
             .with_inner_size(PhysicalSize::new(WINDOW_WIDTH, WINDOW_HEIGHT))
+            .with_min_inner_size(LogicalSize::new(320, 0))
             .with_titlebar_transparent(true)
             .with_fullsize_content_view(true)
             .with_title_hidden(true)
@@ -94,17 +94,6 @@ impl WindowHandler {
         .unwrap();
 
         WindowHandler { window, webview }
-    }
-
-    pub fn try_recv(&self, control_flow: &mut ControlFlow, event: Event<UserEvent>) {
-        *control_flow = ControlFlow::Wait;
-        if let Event::WindowEvent { event, .. } = event {
-            match event {
-                WindowEvent::CloseRequested => *control_flow = ControlFlow::Exit,
-                WindowEvent::Focused(false) => self.window.set_visible(false),
-                _ => {}
-            }
-        }
     }
 
     pub fn show_hide(&self, position: PhysicalPosition<f64>) {

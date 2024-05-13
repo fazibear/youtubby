@@ -37,5 +37,23 @@ function Checker(){
 
 setInterval(Checker, 250);
 
-
-//ytmusic-player-bar -> is-mweb-player-page-modernization-enabled
+// function FixBottomPlayer(event) {
+//   if((event.target.innerWidth || window.innerWidth) < 640) {
+//     console.log(event.target.innerWidth || window.innerWidth);
+//     document.querySelector('ytmusic-player-bar.ytmusic-app').removeAttribute('is-mweb-player-bar-modernization-enabled');
+//     document.querySelector('ytmusic-player-bar.ytmusic-app>#left-controls').style.display = "none";
+//     document.querySelector('ytmusic-player-bar.ytmusic-app>#right-controls').style.display = "none";
+//     document.querySelector('ytmusic-player-bar.ytmusic-app>#right-controls-mweb').style.display = "flex";
+//     document.querySelector('ytmusic-player-bar.ytmusic-app button[aria-label="Action menu"]').style.display = "none";
+//   }else{
+//     document.querySelector('ytmusic-player-bar.ytmusic-app>#left-controls').style.display = "";
+//     document.querySelector('ytmusic-player-bar.ytmusic-app>#right-controls').style.display = "";
+//     document.querySelector('ytmusic-player-bar.ytmusic-app button').style.display = "";
+//     document.querySelector('ytmusic-player-bar.ytmusic-app>#right-controls-mweb').style.display = "none";
+//     document.querySelector('ytmusic-player-bar.ytmusic-app button[aria-label="Action menu"]').style.display = "";
+//   }
+// }
+//
+// //window.addEventListener("load", FixBottomPlayer);
+// window.addEventListener("resize", FixBottomPlayer);
+//

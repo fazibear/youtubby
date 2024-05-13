@@ -1,14 +1,9 @@
-use tao::event_loop::ControlFlow;
-use tray_icon::{
-    ClickType, Icon, TrayIcon, TrayIconBuilder, TrayIconEvent, TrayIconEventReceiver, TrayIconId,
-};
-
-use crate::window_handler::WindowHandler;
 use crate::{assets, menu_handler::MenuHandler};
+use tray_icon::{Icon, TrayIcon, TrayIconBuilder, TrayIconEvent, TrayIconEventReceiver};
 
 pub struct TrayHandler {
-    _icon: TrayIcon,
-    channel: &'static TrayIconEventReceiver,
+    pub icon: TrayIcon,
+    pub channel: &'static TrayIconEventReceiver,
 }
 
 impl TrayHandler {
@@ -16,7 +11,7 @@ impl TrayHandler {
         let (icon_data, icon_width, icon_height) = assets::get_image(assets::ICON);
         let icon_data = Icon::from_rgba(icon_data, icon_width, icon_height).unwrap();
 
-        let _icon = TrayIconBuilder::new()
+        let icon = TrayIconBuilder::new()
             .with_id("0")
             .with_menu(Box::new(menu_handler.menu.clone()))
             .with_menu_on_left_click(false)
@@ -26,20 +21,6 @@ impl TrayHandler {
 
         let channel = TrayIconEvent::receiver();
 
-        Self { channel, _icon }
-    }
-
-    pub fn try_recv(&self, window: &WindowHandler, _control_flow: &mut ControlFlow) {
-        if let Ok(TrayIconEvent {
-            id: TrayIconId(id),
-            click_type: ClickType::Left,
-            icon_rect,
-            ..
-        }) = self.channel.try_recv()
-        {
-            if &id == "0" {
-                window.show_hide(icon_rect.position);
-            }
-        }
+        Self { channel, icon }
     }
 }
