@@ -1,6 +1,16 @@
 # Youtubby
-<img width="320" height="320" src="https://github.com/fazibear/youtubby/blob/master/assets/youtubby.png?raw=true" align="right"/>
+<img width="220" height="220" src="https://github.com/fazibear/youtubby/blob/master/assets/youtubby.png?raw=true" align="right"/>
 
-> For a long time I was looking for desktop Youtube Music Player. I write my own. Yep in Rust BTW ;)
+> For a long time I was looking for desktop Youtube Music Player. With all of them was always something that pissed me off.
+> So I write my own. Yep it's in Rust BTW!
 
-Goal is to supports all platforms, but now focus is on MacOS.
+[WIP] It's very early stage...
+
+Goals:
+- [ ] MacOS support
+- [ ] Windows support
+- [ ] Linux support
+- [ ] Notification support
+- [ ] Last.fm support
+- [ ] Adblocker?
+- [ ] MiniPlayer
