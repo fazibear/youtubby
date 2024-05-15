@@ -14,8 +14,15 @@ mod windows;
 #[cfg(target_os = "windows")]
 pub use windows::WindowsHandler;
 
+use tao::dpi::{LogicalSize, PhysicalPosition, PhysicalSize};
+
 pub static WINDOW_WIDTH: u32 = 896;
 pub static WINDOW_HEIGHT: u32 = 1536;
+pub static USER_AGENT: &str = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
+pub static URL: &str = "https://music.youtube.com";
+
+pub static WINDOW_SIZE: PhysicalSize<u32> = PhysicalSize::new(WINDOW_WIDTH, WINDOW_HEIGHT);
+pub static WINDOW_MIN_SIZE: LogicalSize<u32> = LogicalSize::new(320, 0);
 
 use serde::{Deserialize, Serialize};
 
@@ -30,4 +37,21 @@ pub struct PlayerState {
 #[derive(Debug)]
 pub enum UserEvent {
     PlayerStateUpdated(PlayerState),
+}
+
+impl WindowHandler {
+    pub fn show_hide(&self, position: PhysicalPosition<f64>) {
+        if self.window.is_visible() {
+            self.window.set_visible(false);
+            self.window.set_visible_on_all_workspaces(false);
+        } else {
+            self.window.set_outer_position(PhysicalPosition::new(
+                position.x - (WINDOW_WIDTH / 2) as f64,
+                100.,
+            ));
+            self.window.set_visible(true);
+            self.window.set_visible_on_all_workspaces(true);
+            self.window.set_focus();
+        }
+    }
 }
