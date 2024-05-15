@@ -41,25 +41,30 @@ impl EventsHandler {
             }
         }
 
-        if let Ok(GlobalHotKeyEvent {
-            id,
-            state: HotKeyState::Pressed,
-        }) = key_handler.channel.try_recv()
-        {
-            if let Some(&js) = key_handler.keys.get(&id) {
-                window_handler.webview.evaluate_script(js).unwrap();
+        if let Ok(event) = key_handler.channel.try_recv() {
+            match event {
+                GlobalHotKeyEvent {
+                    id,
+                    state: HotKeyState::Pressed,
+                    ..
+                } => {
+                    if let Some(&js) = key_handler.keys.get(&id) {
+                        window_handler.webview.evaluate_script(js).unwrap()
+                    }
+                }
+                e => println!("{:?}", e),
             }
         }
 
-        if let Ok(TrayIconEvent {
-            id: TrayIconId(id),
-            click_type: ClickType::Left,
-            icon_rect,
-            ..
-        }) = tray_handler.channel.try_recv()
-        {
-            if &id == "0" {
-                window_handler.show_hide(icon_rect.position);
+        if let Ok(event) = tray_handler.channel.try_recv() {
+            match event {
+                TrayIconEvent {
+                    id: TrayIconId(id),
+                    click_type: ClickType::Left,
+                    icon_rect,
+                    ..
+                } if id == "0" => window_handler.show_hide(icon_rect.position),
+                e => println!("{:?}", e),
             }
         }
 
