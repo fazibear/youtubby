@@ -10,10 +10,10 @@ use key_handler::KeyHandler;
 use menu_handler::MenuHandler;
 use tao::event_loop::EventLoopBuilder;
 use tray_handler::TrayHandler;
-use window_handler::WindowHandler;
+use window_handler::{UserEvent, WindowHandler};
 
 fn main() -> wry::Result<()> {
-    let mut event_loop = EventLoopBuilder::<window_handler::UserEvent>::with_user_event().build();
+    let mut event_loop = EventLoopBuilder::<UserEvent>::with_user_event().build();
     let mut window_handler = WindowHandler::new(&mut event_loop);
     let mut key_handler = KeyHandler::new().register_keys();
     let mut menu_handler = MenuHandler::new();
