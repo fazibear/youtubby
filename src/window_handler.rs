@@ -9,10 +9,10 @@ mod linux;
 #[cfg(target_os = "linux")]
 pub use linux::WindowHandler;
 #[cfg(target_os = "windows")]
-#[path = "window_handler/window.rs"]
+#[path = "window_handler/windows.rs"]
 mod windows;
 #[cfg(target_os = "windows")]
-pub use windows::WindowsHandler;
+pub use windows::WindowHandler;
 
 use tao::dpi::{LogicalSize, PhysicalPosition, PhysicalSize};
 

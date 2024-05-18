@@ -1,7 +1,7 @@
 use global_hotkey::{GlobalHotKeyEvent, HotKeyState};
 use tao::event::{Event, WindowEvent};
 use tao::event_loop::ControlFlow;
-use tray_icon::{ClickType, TrayIconEvent, TrayIconId};
+use tray_icon::{MouseButton, TrayIconEvent, TrayIconId};
 
 use crate::key_handler::KeyHandler;
 use crate::menu_handler::MenuHandler;
@@ -58,12 +58,12 @@ impl EventsHandler {
 
         if let Ok(event) = tray_handler.channel.try_recv() {
             match event {
-                TrayIconEvent {
+                TrayIconEvent::Click {
                     id: TrayIconId(id),
-                    click_type: ClickType::Left,
-                    icon_rect,
+                    button: MouseButton::Left,
+                    rect,
                     ..
-                } if id == "0" => window_handler.show_hide(icon_rect.position),
+                } if id == "0" => window_handler.show_hide(rect.position),
                 e => println!("{:?}", e),
             }
         }

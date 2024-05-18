@@ -1,6 +1,4 @@
-use serde::{Deserialize, Serialize};
 use tao::{
-    dpi::{LogicalSize, PhysicalPosition, PhysicalSize},
     event_loop::EventLoop,
     window::{Icon, Window, WindowBuilder},
 };
@@ -10,7 +8,9 @@ use crate::assets;
 
 use tao::platform::windows::{EventLoopBuilderExtWindows, WindowExtWindows};
 
-use crate::window_handler::{PlayerState, UserEvent, WINDOW_HEIGHT, WINDOW_WIDTH};
+use crate::window_handler::{
+    PlayerState, UserEvent, URL, USER_AGENT, WINDOW_MIN_SIZE, WINDOW_SIZE,
+};
 
 pub struct WindowHandler {
     pub window: Window,
@@ -19,18 +19,11 @@ pub struct WindowHandler {
 
 impl WindowHandler {
     pub fn new(event_loop: &mut EventLoop<UserEvent>) -> WindowHandler {
-        #[cfg(target_os = "macos")]
-        event_loop.set_activation_policy(tao::platform::macos::ActivationPolicy::Accessory);
-
         let (icon, icon_width, icon_height) = assets::get_image(assets::ICON);
         let window = WindowBuilder::new()
-            .with_inner_size(PhysicalSize::new(WINDOW_WIDTH, WINDOW_HEIGHT))
-            .with_min_inner_size(LogicalSize::new(320, 0))
-            //.with_titlebar_transparent(true)
-            //.with_fullsize_content_view(true)
-            //.with_title_hidden(true)
-            //.with_titlebar_buttons_hidden(true)
-            //.with_visible(false)
+            .with_inner_size(WINDOW_SIZE)
+            .with_min_inner_size(WINDOW_MIN_SIZE)
+            .with_visible(false)
             .with_focused(true)
             .with_window_icon(Some(
                 Icon::from_rgba(icon, icon_width, icon_height).unwrap(),
@@ -47,13 +40,13 @@ impl WindowHandler {
         };
 
         let webview = builder
-        .with_user_agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36")
-        .with_url("https://music.youtube.com")
-        .with_devtools(true)
-        .with_initialization_script(assets::INIT_SCRIPT)
-        .with_ipc_handler(ipc)
-        .build()
-        .unwrap();
+            .with_user_agent(USER_AGENT)
+            .with_url(URL)
+            .with_devtools(true)
+            .with_initialization_script(assets::INIT_SCRIPT)
+            .with_ipc_handler(ipc)
+            .build()
+            .unwrap();
 
         WindowHandler { window, webview }
     }
