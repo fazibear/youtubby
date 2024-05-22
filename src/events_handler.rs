@@ -1,7 +1,7 @@
 use global_hotkey::{GlobalHotKeyEvent, HotKeyState};
 use tao::event::{Event, WindowEvent};
 use tao::event_loop::ControlFlow;
-use tray_icon::{MouseButton, TrayIconEvent, TrayIconId};
+use tray_icon::{MouseButton, MouseButtonState, TrayIconEvent, TrayIconId};
 
 use crate::key_handler::KeyHandler;
 use crate::menu_handler::MenuHandler;
@@ -35,9 +35,8 @@ impl EventsHandler {
         if let Event::WindowEvent { event, .. } = event {
             match event {
                 WindowEvent::CloseRequested => *control_flow = ControlFlow::Exit,
-                WindowEvent::Focused(false) => window_handler.window.set_visible(false),
-
-                _ => {}
+                WindowEvent::Focused(false) => window_handler.hide(),
+                e => println!("{:?}", e),
             }
         }
 
@@ -61,6 +60,7 @@ impl EventsHandler {
                 TrayIconEvent::Click {
                     id: TrayIconId(id),
                     button: MouseButton::Left,
+                    button_state: MouseButtonState::Down,
                     rect,
                     ..
                 } if id == "0" => window_handler.show_hide(rect.position),
