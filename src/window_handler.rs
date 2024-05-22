@@ -40,18 +40,27 @@ pub enum UserEvent {
 }
 
 impl WindowHandler {
+
     pub fn show_hide(&self, position: PhysicalPosition<f64>) {
         if self.window.is_visible() {
-            self.window.set_visible(false);
-            self.window.set_visible_on_all_workspaces(false);
+            self.hide()
         } else {
-            self.window.set_outer_position(PhysicalPosition::new(
-                position.x - (WINDOW_WIDTH / 2) as f64,
-                100.,
-            ));
-            self.window.set_visible(true);
-            self.window.set_visible_on_all_workspaces(true);
-            self.window.set_focus();
+            self.show(position)
         }
+    }
+
+    pub fn hide(&self) {
+        self.window.set_visible(false);
+        self.window.set_visible_on_all_workspaces(false);
+    }
+
+    pub fn show(&self, position: PhysicalPosition<f64>) {
+        self.window.set_outer_position(PhysicalPosition::new(
+            position.x - (WINDOW_WIDTH / 2) as f64,
+            100.,
+        ));
+        self.window.set_visible(true);
+        self.window.set_visible_on_all_workspaces(true);
+        self.window.set_focus();
     }
 }
