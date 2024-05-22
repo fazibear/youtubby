@@ -18,10 +18,10 @@ jobs:
           override: true
       - name: Setup
         run: |
-          sudo apt-get install libgtk-3-dev libsoup-3.0-dev
+          sudo apt-get install libgtk-3-dev libsoup3.0-dev libjavascriptcoregtk-4.0-dev
       - name: Build
         run: |
-          cargo build --all --release && strip target/release/PROJECT_NAME && mv target/release/PROJECT_NAME target/release/PROJECT_NAME_amd64
+          cargo build --release
 
       - name: Release
         uses: softprops/action-gh-release@v1
@@ -48,7 +48,7 @@ jobs:
 
       - name: Build
         run: |
-          cargo build --all --release
+          cargo build --release
 
       - name: Release
         uses: softprops/action-gh-release@v1
@@ -75,7 +75,7 @@ jobs:
 
       - name: Build for mac
         run: |
-          cargo build --all --release && strip target/release/PROJECT_NAME && mv target/release/PROJECT_NAME target/release/PROJECT_NAME_darwin
+          cargo build --release
 
       - name: Release
         uses: softprops/action-gh-release@v1
