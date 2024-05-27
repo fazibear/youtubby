@@ -19,6 +19,7 @@ impl MenuHandler {
         let icon = tray_icon::menu::Icon::from_rgba(icon_data, icon_width, icon_height).unwrap();
 
         menu.append_items(&[
+            &MenuItem::with_id("show", "Open", true, None),
             &CheckMenuItem::with_id("check-custom-1", "Check Custom 1", true, true, None),
             &PredefinedMenuItem::separator(),
             &PredefinedMenuItem::about(
