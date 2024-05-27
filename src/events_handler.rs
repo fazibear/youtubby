@@ -1,4 +1,5 @@
 use global_hotkey::{GlobalHotKeyEvent, HotKeyState};
+use muda::MenuId;
 use tao::event::{Event, WindowEvent};
 use tao::event_loop::ControlFlow;
 use tray_icon::{MouseButton, MouseButtonState, TrayIconEvent, TrayIconId};
@@ -69,8 +70,10 @@ impl EventsHandler {
         }
 
         if let Ok(event) = menu_handler.channel.try_recv() {
-            if event.id == "quit" {
-                *control_flow = ControlFlow::Exit;
+            match event.id.0.as_str() {
+                "show" => window_handler.show(),
+                "quit" => *control_flow = ControlFlow::Exit,
+                &_ => println!(""),
             }
         }
     }
