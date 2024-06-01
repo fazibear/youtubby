@@ -9,7 +9,7 @@ impl State {
     pub fn load_or_default() -> Self {
         if let Some(state) = Self::load() {
             state
-        }else{
+        } else {
             Self::default()
         }
     }

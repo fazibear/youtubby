@@ -7,6 +7,8 @@ pub struct TrayHandler {
     pub channel: &'static TrayIconEventReceiver,
 }
 
+const MAX_TRAY_STRING_LENGTH: usize = 46;
+
 impl TrayHandler {
     pub fn new(menu_handler: &MenuHandler) -> TrayHandler {
         let (icon_data, icon_width, icon_height) = assets::get_image(assets::ICON);
@@ -26,20 +28,26 @@ impl TrayHandler {
     }
 
     pub fn set_title(&self, meta: &PlayerState) {
-       self.icon.set_title(Self::song_info(meta));
+        self.icon.set_title(Self::song_info(meta));
     }
 
     pub fn set_tooltip(&self, meta: &PlayerState) {
-       self.icon.set_tooltip(Self::song_info(meta)).unwrap();
-
+        self.icon.set_tooltip(Self::song_info(meta)).unwrap();
     }
 
     fn song_info(meta: &PlayerState) -> Option<String> {
-       let play = if meta.state == "playing" {
-           "▶"
-       } else {
-           "⏸"
-       };
-       Some(format!("{} {} - {}", play, meta.artist, meta.title))
+        let play = if meta.state == "playing" {
+            "▶"
+        } else {
+            "⏸"
+        };
+        let mut info = format!("{} {} - {}", play, meta.artist, meta.title);
+
+        if info.len() > MAX_TRAY_STRING_LENGTH {
+            info.truncate(MAX_TRAY_STRING_LENGTH);
+            info.push_str("...");
+        }
+
+        Some(info)
     }
 }
