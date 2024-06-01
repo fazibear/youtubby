@@ -15,7 +15,7 @@ use tray_handler::TrayHandler;
 use window_handler::{UserEvent, WindowHandler};
 
 fn main() -> wry::Result<()> {
-    let mut state = State::load();
+    let mut state = State::default();
     let mut event_loop = EventLoopBuilder::<UserEvent>::with_user_event().build();
     let mut window_handler = WindowHandler::new(&mut event_loop);
     let mut key_handler = KeyHandler::new().register_keys();

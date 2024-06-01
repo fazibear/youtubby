@@ -1,5 +1,4 @@
 use global_hotkey::{GlobalHotKeyEvent, HotKeyState};
-use muda::{MenuEvent, MenuId};
 use tao::event::{Event, WindowEvent};
 use tao::event_loop::ControlFlow;
 use tray_icon::{MouseButton, MouseButtonState, TrayIconEvent, TrayIconId};
@@ -25,16 +24,14 @@ impl EventsHandler {
         *control_flow = ControlFlow::Wait;
 
         match event {
-            Event::UserEvent(UserEvent::PlayerStateUpdated(meta)) if state.show_info_in_tray => {
-                tray_handler.set_title(meta)
-            }
-            Event::UserEvent(UserEvent::PlayerStateUpdated(meta)) if state.show_info_in_tooltip => {
-                tray_handler.set_tooltip(meta)
+            Event::UserEvent(UserEvent::PlayerStateUpdated(meta)) => {
+                state.update_player_info(meta);
+                tray_handler.refresh(state);
             }
             Event::WindowEvent {
                 event: WindowEvent::Focused(false),
                 ..
-            } if state.hide_unfocused_window => window_handler.hide(),
+            } if state.preferences.hide_unfocused_window => window_handler.hide(),
             Event::WindowEvent {
                 event: WindowEvent::CloseRequested,
                 ..
@@ -73,18 +70,29 @@ impl EventsHandler {
         if let Ok(event) = menu_handler.channel.try_recv() {
             match event.id.0.as_str() {
                 "show" => window_handler.show(),
+                "playstop" => window_handler
+                    .webview
+                    .evaluate_script("PlayPauseClick()")
+                    .unwrap(),
+                "next" => window_handler.webview.evaluate_script("").unwrap(),
+                "prev" => window_handler.webview.evaluate_script("").unwrap(),
                 "quit" => Self::exit(control_flow, state),
                 "hide_unfocused_window" => {
-                    state.hide_unfocused_window = !state.hide_unfocused_window;
-                    state.save();
+                    state.preferences.hide_unfocused_window =
+                        !state.preferences.hide_unfocused_window;
+                    state.save_preferences();
+                    tray_handler.refresh(state);
                 }
                 "show_info_in_tray" => {
-                    state.show_info_in_tray = !state.show_info_in_tray;
-                    state.save();
+                    state.preferences.show_info_in_tray = !state.preferences.show_info_in_tray;
+                    state.save_preferences();
+                    tray_handler.refresh(state);
                 }
                 "show_info_in_tooltip" => {
-                    state.show_info_in_tooltip = !state.show_info_in_tooltip;
-                    state.save();
+                    state.preferences.show_info_in_tooltip =
+                        !state.preferences.show_info_in_tooltip;
+                    state.save_preferences();
+                    tray_handler.refresh(state);
                 }
 
                 _e => {} // println!("{:?}", e),
@@ -93,7 +101,7 @@ impl EventsHandler {
     }
 
     fn exit(control_flow: &mut ControlFlow, state: &State) {
-        state.save();
+        state.save_preferences();
         *control_flow = ControlFlow::Exit;
     }
 }
