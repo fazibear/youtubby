@@ -25,10 +25,10 @@ impl EventsHandler {
         *control_flow = ControlFlow::Wait;
 
         match event {
-            Event::UserEvent(UserEvent::PlayerStateUpdated(meta)) if state.show_song_in_tray => {
+            Event::UserEvent(UserEvent::PlayerStateUpdated(meta)) if state.show_info_in_tray => {
                 tray_handler.set_title(meta)
             }
-            Event::UserEvent(UserEvent::PlayerStateUpdated(meta)) if state.show_song_in_tooltip => {
+            Event::UserEvent(UserEvent::PlayerStateUpdated(meta)) if state.show_info_in_tooltip => {
                 tray_handler.set_tooltip(meta)
             }
             Event::WindowEvent {
@@ -74,6 +74,19 @@ impl EventsHandler {
             match event.id.0.as_str() {
                 "show" => window_handler.show(),
                 "quit" => Self::exit(control_flow, state),
+                "hide_unfocused_window" => {
+                    state.hide_unfocused_window = !state.hide_unfocused_window;
+                    state.save();
+                }
+                "show_info_in_tray" => {
+                    state.show_info_in_tray = !state.show_info_in_tray;
+                    state.save();
+                }
+                "show_info_in_tooltip" => {
+                    state.show_info_in_tooltip = !state.show_info_in_tooltip;
+                    state.save();
+                }
+
                 _e => {} // println!("{:?}", e),
             }
         }

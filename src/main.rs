@@ -19,7 +19,7 @@ fn main() -> wry::Result<()> {
     let mut event_loop = EventLoopBuilder::<UserEvent>::with_user_event().build();
     let mut window_handler = WindowHandler::new(&mut event_loop);
     let mut key_handler = KeyHandler::new().register_keys();
-    let mut menu_handler = MenuHandler::new();
+    let mut menu_handler = MenuHandler::new(&state);
     let mut tray_handler = TrayHandler::new(&menu_handler);
 
     event_loop.run(move |event, _, control_flow| {

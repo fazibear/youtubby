@@ -1,14 +1,13 @@
 use directories::ProjectDirs;
 use serde::{Deserialize, Serialize};
-use serde_json::Error;
 use std::fs::{self, File};
-use std::io::{BufReader, BufWriter, Read, Write};
-use std::path::{Path, PathBuf};
+use std::io::{Read, Write};
+use std::path::PathBuf;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct State {
-    pub show_song_in_tray: bool,
-    pub show_song_in_tooltip: bool,
+    pub show_info_in_tray: bool,
+    pub show_info_in_tooltip: bool,
     pub hide_unfocused_window: bool,
     pub lastfm_api_key: String,
 }
@@ -20,7 +19,6 @@ impl State {
             file.read_to_string(&mut buf).expect("ok");
             if let Ok(state) = serde_json::from_str(&buf) {
                 file.sync_all().expect("ok");
-                println!("{:?}", state);
                 return state;
             }
         }
@@ -37,8 +35,8 @@ impl State {
 
     fn default() -> Self {
         Self {
-            show_song_in_tray: true,
-            show_song_in_tooltip: true,
+            show_info_in_tray: true,
+            show_info_in_tooltip: true,
             hide_unfocused_window: true,
             lastfm_api_key: String::from("123testxxx123"),
         }
