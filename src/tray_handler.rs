@@ -1,3 +1,4 @@
+use crate::window_handler::PlayerState;
 use crate::{assets, menu_handler::MenuHandler};
 use tray_icon::{Icon, TrayIcon, TrayIconBuilder, TrayIconEvent, TrayIconEventReceiver};
 
@@ -22,5 +23,23 @@ impl TrayHandler {
         let channel = TrayIconEvent::receiver();
 
         Self { channel, icon }
+    }
+
+    pub fn set_title(&self, meta: &PlayerState) {
+       self.icon.set_title(Self::song_info(meta));
+    }
+
+    pub fn set_tooltip(&self, meta: &PlayerState) {
+       self.icon.set_tooltip(Self::song_info(meta)).unwrap();
+
+    }
+
+    fn song_info(meta: &PlayerState) -> Option<String> {
+       let play = if meta.state == "playing" {
+           "▶"
+       } else {
+           "⏸"
+       };
+       Some(format!("{} {} - {}", play, meta.artist, meta.title))
     }
 }

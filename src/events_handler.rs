@@ -1,15 +1,16 @@
 use global_hotkey::{GlobalHotKeyEvent, HotKeyState};
-use muda::MenuId;
+use muda::{MenuEvent, MenuId};
 use tao::event::{Event, WindowEvent};
 use tao::event_loop::ControlFlow;
 use tray_icon::{MouseButton, MouseButtonState, TrayIconEvent, TrayIconId};
 
 use crate::key_handler::KeyHandler;
 use crate::menu_handler::MenuHandler;
+use crate::state::State;
 use crate::tray_handler::TrayHandler;
 use crate::window_handler::{UserEvent, WindowHandler};
 
-pub struct EventsHandler {}
+pub struct EventsHandler();
 
 impl EventsHandler {
     pub fn callback(
@@ -19,27 +20,17 @@ impl EventsHandler {
         key_handler: &mut KeyHandler,
         menu_handler: &mut MenuHandler,
         tray_handler: &mut TrayHandler,
+        state: &mut State,
     ) {
         *control_flow = ControlFlow::Wait;
 
-        if let Event::UserEvent(UserEvent::PlayerStateUpdated(meta)) = event {
-            let play = if meta.state == "playing" {
-                "▶"
-            } else {
-                "⏸"
-            };
-            let info = format!("{} {} - {}", play, meta.artist, meta.title);
-            tray_handler.icon.set_title(Some(info.clone()));
-            tray_handler.icon.set_tooltip(Some(info)).unwrap();
+        match event {
+            Event::UserEvent(UserEvent::PlayerStateUpdated(meta)) if state.show_song_in_tray => tray_handler.set_title(meta),
+            Event::UserEvent(UserEvent::PlayerStateUpdated(meta)) if state.show_song_in_tooltip => tray_handler.set_tooltip(meta),
+            Event::WindowEvent { event:  WindowEvent::Focused(false), ..}  if state.hide_unfocused_window => window_handler.hide(),
+            Event::WindowEvent { event: WindowEvent::CloseRequested, .. } => *control_flow = ControlFlow::Exit,
+            e => {} //println!("{:?}", e),
         };
-
-        if let Event::WindowEvent { event, .. } = event {
-            match event {
-                WindowEvent::CloseRequested => *control_flow = ControlFlow::Exit,
-                WindowEvent::Focused(false) => window_handler.hide(),
-                e => println!("{:?}", e),
-            }
-        }
 
         if let Ok(event) = key_handler.channel.try_recv() {
             match event {
@@ -65,7 +56,7 @@ impl EventsHandler {
                     rect,
                     ..
                 } if id == "0" => window_handler.show_hide(rect.position),
-                e => println!("{:?}", e),
+                _e =>{} // println!("{:?}", e),
             }
         }
 
@@ -73,7 +64,7 @@ impl EventsHandler {
             match event.id.0.as_str() {
                 "show" => window_handler.show(),
                 "quit" => *control_flow = ControlFlow::Exit,
-                &_ => println!(""),
+                _e =>{} // println!("{:?}", e),
             }
         }
     }
