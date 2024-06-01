@@ -24,28 +24,28 @@ impl MenuHandler {
                     "hide_unfocused_window",
                     "Hide unfocused window",
                     true,
-                    state.hide_unfocused_window,
+                    state.preferences.hide_unfocused_window,
                     None,
                 ),
                 &CheckMenuItem::with_id(
                     "show_info_in_tray",
                     "Show info in tray",
                     true,
-                    state.show_info_in_tray,
+                    state.preferences.show_info_in_tray,
                     None,
                 ),
                 &CheckMenuItem::with_id(
                     "show_info_in_tooltip",
                     "Show info in tooltip",
                     true,
-                    state.show_info_in_tooltip,
+                    state.preferences.show_info_in_tooltip,
                     None,
                 ),
-                &CheckMenuItem::with_id("check-custom-5", "Check Custom 1", true, true, None),
             ])
             .unwrap();
 
         menu.append_items(&[
+            &MenuItem::with_id(MenuId::new("show"), "Show", true, None),
             &MenuItem::with_id(MenuId::new("playstop"), "Play/Stop", true, None),
             &MenuItem::with_id(MenuId::new("next"), "Next Song", true, None),
             &MenuItem::with_id(MenuId::new("prev"), "Previous Song", true, None),
