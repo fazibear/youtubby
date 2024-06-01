@@ -1,3 +1,9 @@
+use directories::ProjectDirs;
+use serde::{Deserialize, Serialize};
+use std::fs::File;
+use std::io::{BufReader, BufWriter};
+
+#[derive(Serialize, Deserialize)]
 pub struct State {
     pub show_song_in_tray: bool,
     pub show_song_in_tooltip: bool,
@@ -6,16 +12,21 @@ pub struct State {
 }
 
 impl State {
-    pub fn load_or_default() -> Self {
-        if let Some(state) = Self::load() {
-            state
-        } else {
-            Self::default()
+    pub fn load() -> State {
+        if let Some(file) = Self::config_file() {
+            let reader = BufReader::new(file);
+            if let Ok(state) = serde_json::from_reader(reader) {
+                return state;
+            }
         }
+        Self::default()
     }
 
     pub fn save(&self) {
-        todo!()
+        if let Some(file) = Self::config_file() {
+            let writer = BufWriter::new(file);
+            let _ = serde_json::to_writer(writer, self);
+        }
     }
 
     fn default() -> Self {
@@ -27,7 +38,13 @@ impl State {
         }
     }
 
-    fn load() -> Option<State> {
-        Some(Self::default())
+    fn config_file() -> Option<File> {
+        if let Some(dirs) = ProjectDirs::from("com", "fazibear", "Youtubby") {
+            let path = dirs.config_dir().join("config.json");
+            if let Ok(file) = File::open(path) {
+                return Some(file);
+            }
+        }
+        None
     }
 }
