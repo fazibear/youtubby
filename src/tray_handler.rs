@@ -1,4 +1,4 @@
-use crate::state::State;
+use crate::app::App;
 use crate::{assets, menu_handler::MenuHandler};
 use tray_icon::{Icon, TrayIcon, TrayIconBuilder, TrayIconEvent, TrayIconEventReceiver};
 
@@ -25,7 +25,7 @@ impl TrayHandler {
         Self { channel, icon }
     }
 
-    pub fn refresh(&self, state: &State) {
+    pub fn refresh(&self, state: &App) {
         let tray = if state.preferences.show_info_in_tray {
             Some(state.player_info.clone())
         } else {

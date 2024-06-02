@@ -4,12 +4,14 @@ use std::fs::{self, File};
 use std::io::{Read, Write};
 use std::path::PathBuf;
 
+use crate::last_fm;
+
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Preferences {
     pub show_info_in_tray: bool,
     pub show_info_in_tooltip: bool,
     pub hide_unfocused_window: bool,
-    pub last_fm_session_token: Option<String>,
+    pub last_fm: last_fm::State,
 }
 
 impl Preferences {
@@ -18,7 +20,7 @@ impl Preferences {
             show_info_in_tray: true,
             show_info_in_tooltip: true,
             hide_unfocused_window: true,
-            last_fm_session_token: None,
+            last_fm: last_fm::State::None,
         }
     }
 
