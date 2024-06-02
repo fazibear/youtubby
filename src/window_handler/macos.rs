@@ -52,9 +52,14 @@ impl WindowHandler {
             .with_devtools(true)
             .with_initialization_script(assets::INIT_SCRIPT)
             .with_ipc_handler(ipc)
+            .with_autoplay(true)
             .build()
             .unwrap();
 
         WindowHandler { window, webview }
+    }
+
+    pub fn open_url(&self, url: &str) {
+        let _ = std::process::Command::new("open").arg(url).output();
     }
 }

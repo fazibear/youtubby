@@ -20,6 +20,10 @@ function PlayPauseClick() {
   }
 }
 
+function WaitWindow() {
+  window.alert("poczekaj");
+}
+
 function Checker(){
   let metadata = navigator.mediaSession.metadata;
   if(!metadata){ return }

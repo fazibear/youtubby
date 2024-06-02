@@ -2,16 +2,20 @@
 name = "youtubby"
 version = "0.1.0"
 edition = "2021"
+authors = ["fazibear"]
+homepage = "https://youtubby.fazibear.me"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-wry = "0.39.5"
+wry = "0.40.1"
 tao = "0.28"
-tray-icon = "0.14"
-muda = "0.13.4"
-global-hotkey = "0.5.3"
+tray-icon = "0.14.2"
+muda = "0.13.5"
+global-hotkey = "0.5.4"
 image = "0.25.1"
 serde_json = "1.0.117"
-serde = "1.0.202"
+serde = "1.0.203"
 directories = "5.0.1"
+reqwest = { version = "0.12.4", features = ["blocking"] }
+url = "2.5.0"

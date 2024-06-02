@@ -4,6 +4,7 @@ use tao::event_loop::ControlFlow;
 use tray_icon::{MouseButton, MouseButtonState, TrayIconEvent, TrayIconId};
 
 use crate::key_handler::KeyHandler;
+use crate::last_fm::LastFm;
 use crate::menu_handler::MenuHandler;
 use crate::state::State;
 use crate::tray_handler::TrayHandler;
@@ -19,6 +20,7 @@ impl EventsHandler {
         key_handler: &mut KeyHandler,
         menu_handler: &mut MenuHandler,
         tray_handler: &mut TrayHandler,
+        last_fm: &mut LastFm,
         state: &mut State,
     ) {
         *control_flow = ControlFlow::Wait;
@@ -94,7 +96,7 @@ impl EventsHandler {
                     state.save_preferences();
                     tray_handler.refresh(state);
                 }
-
+                "lastfm_auth" => window_handler.open_url(&last_fm.auth_url()),
                 _e => {} // println!("{:?}", e),
             }
         }

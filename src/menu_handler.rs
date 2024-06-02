@@ -14,9 +14,6 @@ impl MenuHandler {
     pub fn new(state: &State) -> Self {
         let menu = Menu::new();
 
-        let (icon_data, icon_width, icon_height) = assets::get_image(assets::LOGO);
-        let icon = tray_icon::menu::Icon::from_rgba(icon_data, icon_width, icon_height).unwrap();
-
         let prefs = Submenu::new("Preferences", true);
         prefs
             .append_items(&[
@@ -44,6 +41,18 @@ impl MenuHandler {
             ])
             .unwrap();
 
+        let (icon_data, icon_width, icon_height) = assets::get_image(assets::LOGO);
+        let icon = tray_icon::menu::Icon::from_rgba(icon_data, icon_width, icon_height).unwrap();
+
+        let about = AboutMetadata {
+            name: Some(env!("CARGO_PKG_NAME").to_string()),
+            version: Some(env!("CARGO_PKG_VERSION").to_string()),
+            copyright: Some(format!("{} 󰗦  2024", env!("CARGO_PKG_AUTHORS"))),
+            website: Some(env!("CARGO_PKG_HOMEPAGE").to_string()),
+            icon: Some(icon),
+            ..Default::default()
+        };
+
         menu.append_items(&[
             &MenuItem::with_id(MenuId::new("show"), "Show", true, None),
             &MenuItem::with_id(MenuId::new("playstop"), "Play/Stop", true, None),
@@ -51,17 +60,14 @@ impl MenuHandler {
             &MenuItem::with_id(MenuId::new("prev"), "Previous Song", true, None),
             &PredefinedMenuItem::separator(),
             &prefs,
-            &PredefinedMenuItem::about(
+            &MenuItem::with_id(
+                MenuId::new("lastfm_auth"),
+                "Authenticate Last.fm",
+                true,
                 None,
-                Some(AboutMetadata {
-                    name: Some("Youtubby".to_string()),
-                    version: Some("0.1".to_string()),
-                    copyright: Some("Copyright 2024".to_string()),
-                    website: Some("https://youtubby.fazibear.me".to_string()),
-                    icon: Some(icon),
-                    ..Default::default()
-                }),
             ),
+            &PredefinedMenuItem::separator(),
+            &PredefinedMenuItem::about(None, Some(about)),
             &PredefinedMenuItem::separator(),
             &MenuItem::with_id(MenuId::new("quit"), "Quit Youtubby", true, None),
         ])
