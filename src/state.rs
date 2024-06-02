@@ -22,7 +22,7 @@ pub struct State {
 }
 
 impl State {
-    pub fn default() -> State {
+    pub fn new() -> State {
         Self {
             preferences: Self::load_preferences(),
             player_info: String::from(""),

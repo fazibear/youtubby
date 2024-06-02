@@ -45,9 +45,29 @@ impl WindowHandler {
             .with_devtools(true)
             .with_initialization_script(assets::INIT_SCRIPT)
             .with_ipc_handler(ipc)
+            .with_autoplay(true)
             .build()
             .unwrap();
 
         WindowHandler { window, webview }
+    }
+
+    pub fn open_url(url: &str) {
+        extern crate shell32;
+        extern crate winapi;
+
+        use std::ffi::CString;
+        use std::ptr;
+
+        unsafe {
+            shell32::ShellExecuteA(
+                ptr::null_mut(),
+                CString::new("open").unwrap().as_ptr(),
+                CString::new(url.replace("\n", "%0A")).unwrap().as_ptr(),
+                ptr::null(),
+                ptr::null(),
+                winapi::SW_SHOWNORMAL,
+            );
+        }
     }
 }
