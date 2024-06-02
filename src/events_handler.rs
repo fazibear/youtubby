@@ -82,18 +82,18 @@ impl EventsHandler {
                 "hide_unfocused_window" => {
                     state.preferences.hide_unfocused_window =
                         !state.preferences.hide_unfocused_window;
-                    state.save_preferences();
+                    state.preferences.save();
                     tray_handler.refresh(state);
                 }
                 "show_info_in_tray" => {
                     state.preferences.show_info_in_tray = !state.preferences.show_info_in_tray;
-                    state.save_preferences();
+                    state.preferences.save();
                     tray_handler.refresh(state);
                 }
                 "show_info_in_tooltip" => {
                     state.preferences.show_info_in_tooltip =
                         !state.preferences.show_info_in_tooltip;
-                    state.save_preferences();
+                    state.preferences.save();
                     tray_handler.refresh(state);
                 }
                 "lastfm_auth" => window_handler.open_url(&last_fm.auth_url()),
@@ -103,7 +103,7 @@ impl EventsHandler {
     }
 
     fn exit(control_flow: &mut ControlFlow, state: &State) {
-        state.save_preferences();
+        state.preferences.save();
         *control_flow = ControlFlow::Exit;
     }
 }
