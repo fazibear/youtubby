@@ -8,10 +8,18 @@ use muda::{
 pub struct MenuHandler {
     pub channel: &'static MenuEventReceiver,
     pub menu: Menu,
+    pub last_fm: MenuItem,
 }
 
 impl MenuHandler {
     pub fn new(state: &State) -> Self {
+        let last_fm = MenuItem::with_id(
+            MenuId::new("lastfm_auth"),
+            "Authenticate Last.fm",
+            true,
+            None,
+        );
+
         let menu = Menu::new();
 
         let prefs = Submenu::new("Preferences", true);
@@ -60,12 +68,7 @@ impl MenuHandler {
             &MenuItem::with_id(MenuId::new("prev"), "Previous Song", true, None),
             &PredefinedMenuItem::separator(),
             &prefs,
-            &MenuItem::with_id(
-                MenuId::new("lastfm_auth"),
-                "Authenticate Last.fm",
-                true,
-                None,
-            ),
+            &last_fm,
             &PredefinedMenuItem::separator(),
             &PredefinedMenuItem::about(None, Some(about)),
             &PredefinedMenuItem::separator(),
@@ -75,6 +78,10 @@ impl MenuHandler {
 
         let channel = MenuEvent::receiver();
 
-        Self { channel, menu }
+        Self {
+            channel,
+            menu,
+            last_fm,
+        }
     }
 }

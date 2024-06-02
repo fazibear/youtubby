@@ -9,7 +9,7 @@ pub struct Preferences {
     pub show_info_in_tray: bool,
     pub show_info_in_tooltip: bool,
     pub hide_unfocused_window: bool,
-    pub lastfm_api_key: Option<String>,
+    pub last_fm_session_token: Option<String>,
 }
 
 impl Preferences {
@@ -18,7 +18,7 @@ impl Preferences {
             show_info_in_tray: true,
             show_info_in_tooltip: true,
             hide_unfocused_window: true,
-            lastfm_api_key: None,
+            last_fm_session_token: None,
         }
     }
 

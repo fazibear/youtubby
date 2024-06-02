@@ -1,3 +1,4 @@
+use crate::last_fm;
 use crate::window_handler::PlayerState;
 use crate::Preferences;
 
@@ -6,6 +7,7 @@ const MAX_PLAYER_INFO_STRING_LENGTH: usize = 46;
 pub struct State {
     pub preferences: Preferences,
     pub player_info: String,
+    pub last_fm_auth_state: last_fm::AuthState,
 }
 
 impl State {
@@ -13,6 +15,7 @@ impl State {
         Self {
             preferences: Preferences::load(),
             player_info: String::from(""),
+            last_fm_auth_state: last_fm::AuthState::None,
         }
     }
 
