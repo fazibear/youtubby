@@ -1,5 +1,5 @@
 use crate::assets;
-use crate::state::State;
+use crate::preferences::Preferences;
 use muda::{
     AboutMetadata, CheckMenuItem, Menu, MenuEvent, MenuEventReceiver, MenuId, MenuItem,
     PredefinedMenuItem, Submenu,
@@ -12,7 +12,7 @@ pub struct MenuHandler {
 }
 
 impl MenuHandler {
-    pub fn new(state: &State) -> Self {
+    pub fn new(preferences: &Preferences) -> Self {
         let last_fm = MenuItem::with_id(
             MenuId::new("lastfm_auth"),
             "Authenticate Last.fm",
@@ -29,21 +29,21 @@ impl MenuHandler {
                     "hide_unfocused_window",
                     "Hide unfocused window",
                     true,
-                    state.preferences.hide_unfocused_window,
+                    preferences.hide_unfocused_window,
                     None,
                 ),
                 &CheckMenuItem::with_id(
                     "show_info_in_tray",
                     "Show info in tray",
                     true,
-                    state.preferences.show_info_in_tray,
+                    preferences.show_info_in_tray,
                     None,
                 ),
                 &CheckMenuItem::with_id(
                     "show_info_in_tooltip",
                     "Show info in tooltip",
                     true,
-                    state.preferences.show_info_in_tooltip,
+                    preferences.show_info_in_tooltip,
                     None,
                 ),
             ])
