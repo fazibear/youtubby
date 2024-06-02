@@ -1,12 +1,12 @@
 pub struct LastFm();
 
-use std::collections::HashMap;
-
 use muda::MenuItem;
 use url::Url;
 
 use crate::state::State;
 use crate::window_handler::WindowHandler;
+
+use serde_json_path::JsonPath;
 
 const API_KEY: &str = "0418be880444b5a60329196d88a4909d";
 const API_SECRET: &str = "8dca20779af23f6eb67f5ea424042059";
@@ -62,8 +62,20 @@ impl LastFm {
         let mut url = Url::parse(API_URL).expect("OK");
         url.query_pairs_mut()
             .append_pair("method", "auth.getSession")
-            .append_pair("api_key", API_KEY)
             .append_pair("token", token);
+
+        self.fetch_key_from_json(&mut url, "$.session.key")
+    }
+
+    fn token(&self) -> Option<String> {
+        let mut url = Url::parse(API_URL).expect("OK");
+        url.query_pairs_mut().append_pair("method", "auth.getToken");
+
+        self.fetch_key_from_json(&mut url, "$.token")
+    }
+
+    fn fetch_key_from_json(&self, url: &mut Url, path_str: &str) -> Option<String> {
+        url.query_pairs_mut().append_pair("api_key", API_KEY);
 
         let mut query = url
             .query_pairs()
@@ -71,8 +83,6 @@ impl LastFm {
             .collect::<Vec<String>>();
 
         query.sort();
-
-        println!("{:?}", query.join(""));
 
         let sig = format!(
             "{:x}",
@@ -83,33 +93,20 @@ impl LastFm {
             .append_pair("api_sig", &sig)
             .append_pair("format", "json");
 
-        let json = reqwest::blocking::get(url.to_string())
+        let resp = reqwest::blocking::get(url.to_string())
             .expect("ok")
             .text()
             .expect("ok");
 
-        println!("{}", json);
+        let json = serde_json::from_str(&resp).expect("ok");
 
-        let map = serde_json::from_str::<HashMap<&str, &str>>(&json).expect("ok");
-
-        let val = map.get("key").expect("ok");
-
-        println!("{}", val);
-
-        Some(val.to_string())
-    }
-
-    fn token(&self) -> Option<String> {
-        let mut url = Url::parse(API_URL).expect("OK");
-        url.query_pairs_mut()
-            .append_pair("method", "auth.getToken")
-            .append_pair("api_key", API_KEY)
-            .append_pair("format", "json");
-
-        let json = reqwest::blocking::get(url).expect("ok").text().expect("ok");
-        let map = serde_json::from_str::<HashMap<&str, &str>>(&json).expect("ok");
-
-        let val = map.get("token").expect("ok");
+        let path = JsonPath::parse(path_str).expect("ok");
+        let val = path
+            .query(&json)
+            .exactly_one()
+            .expect("ok")
+            .as_str()
+            .expect("ok");
 
         Some(val.to_string())
     }

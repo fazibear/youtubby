@@ -4,7 +4,7 @@ use tao::event_loop::ControlFlow;
 use tray_icon::{MouseButton, MouseButtonState, TrayIconEvent, TrayIconId};
 
 use crate::key_handler::KeyHandler;
-use crate::last_fm::{self, LastFm};
+use crate::last_fm::LastFm;
 use crate::menu_handler::MenuHandler;
 use crate::state::State;
 use crate::tray_handler::TrayHandler;
