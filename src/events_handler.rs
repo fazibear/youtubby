@@ -1,6 +1,6 @@
 use crate::app::App;
-use crate::last_fm;
 use crate::window_handler::UserEvent;
+use crate::{last_fm, tray_handler};
 use global_hotkey::{GlobalHotKeyEvent, HotKeyState};
 use tao::event::{Event, WindowEvent};
 use tao::event_loop::ControlFlow;
@@ -11,8 +11,8 @@ pub fn callback(app: &mut App, event: &Event<UserEvent>, control_flow: &mut Cont
 
     match event {
         Event::UserEvent(UserEvent::PlayerStateUpdated(meta)) => {
-            app.update_player_info(meta);
-            app.tray_handler.refresh(app);
+            tray_handler::refresh(app);
+            app.player_state = Some(meta.clone());
         }
         Event::WindowEvent {
             event: WindowEvent::Focused(false),
@@ -67,17 +67,16 @@ pub fn callback(app: &mut App, event: &Event<UserEvent>, control_flow: &mut Cont
             "hide_unfocused_window" => {
                 app.preferences.hide_unfocused_window = !app.preferences.hide_unfocused_window;
                 app.preferences.save();
-                app.tray_handler.refresh(app);
+                tray_handler::refresh(app);
             }
             "show_info_in_tray" => {
                 app.preferences.show_info_in_tray = !app.preferences.show_info_in_tray;
-                app.preferences.save();
-                app.tray_handler.refresh(app);
+                tray_handler::refresh(app);
             }
             "show_info_in_tooltip" => {
                 app.preferences.show_info_in_tooltip = !app.preferences.show_info_in_tooltip;
                 app.preferences.save();
-                app.tray_handler.refresh(app);
+                tray_handler::refresh(app);
             }
             "lastfm_auth" => last_fm::menu_click(app),
             _e => {} // println!("{:?}", e),
