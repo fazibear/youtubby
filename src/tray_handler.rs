@@ -1,5 +1,5 @@
 use crate::app::App;
-use crate::window_handler::PlayerState;
+use crate::player_state::{self, PlayerState};
 use crate::{assets, menu_handler::MenuHandler};
 use tray_icon::{Icon, TrayIcon, TrayIconBuilder, TrayIconEvent, TrayIconEventReceiver};
 
@@ -49,14 +49,20 @@ pub fn refresh(app: &mut App) {
         .expect("set tooltip value");
 }
 
-pub fn player_info(player_state: &Option<PlayerState>) -> Option<String> {
-    if let Some(ref meta) = player_state {
-        let play = if meta.state == "playing" {
-            "▶"
-        } else {
-            "⏸"
-        };
-        let mut info = format!("{} {} - {}", play, meta.artist, meta.title);
+pub fn player_info(state: &PlayerState) -> Option<String> {
+    let icon = match state.state {
+        player_state::State::PLAYING => "",
+        player_state::State::STOP => "",
+        player_state::State::PAUSED => "",
+    };
+
+    if let PlayerState {
+        artist: Some(artist),
+        track: Some(track),
+        ..
+    } = state
+    {
+        let mut info = format!("{} {} - {}", icon, artist, track);
 
         if info.len() > MAX_PLAYER_INFO_STRING_LENGTH {
             info.truncate(MAX_PLAYER_INFO_STRING_LENGTH);

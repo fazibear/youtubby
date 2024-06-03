@@ -4,7 +4,7 @@ use tao::{
 };
 use wry::{http::Request, WebView, WebViewBuilder};
 
-use crate::assets;
+use crate::{assets, player_state::PlayerState};
 
 use tao::platform::windows::{EventLoopBuilderExtWindows, WindowExtWindows};
 

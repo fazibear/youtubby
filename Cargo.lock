@@ -3327,6 +3327,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "url_encoded_data"
+version = "0.6.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5e1fdf35657b22e2c3b485cfb5ab66d5aa9dd5b0dce9902a314a830e2ea05972"
+dependencies = [
+ "anyhow",
+ "url",
+]
+
+[[package]]
 name = "utf-8"
 version = "0.7.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3939,6 +3949,7 @@ name = "youtubby"
 version = "0.1.0"
 dependencies = [
  "directories",
+ "form_urlencoded",
  "global-hotkey",
  "image",
  "md5",
@@ -3950,6 +3961,7 @@ dependencies = [
  "tao",
  "tray-icon",
  "url",
+ "url_encoded_data",
  "wry",
 ]
 

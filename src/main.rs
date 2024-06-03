@@ -4,6 +4,7 @@ mod events_handler;
 mod key_handler;
 mod last_fm;
 mod menu_handler;
+mod player_state;
 mod preferences;
 mod tray_handler;
 mod window_handler;
