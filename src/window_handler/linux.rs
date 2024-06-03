@@ -4,10 +4,10 @@ use tao::{
 };
 use wry::{http::Request, WebView, WebViewBuilder};
 
-use crate::assets;
 use crate::window_handler::{
     PlayerState, UserEvent, URL, USER_AGENT, WINDOW_MIN_SIZE, WINDOW_SIZE,
 };
+use crate::{assets, player_state::PlayerState};
 
 use tao::platform::unix::WindowBuilderExtUnix;
 

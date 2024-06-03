@@ -1,10 +1,11 @@
 use crate::events_handler;
 use crate::key_handler::KeyHandler;
 use crate::menu_handler::MenuHandler;
+use crate::player_state::PlayerState;
 use crate::preferences::Preferences;
 use crate::tray_handler::TrayHandler;
-use crate::window_handler::PlayerState;
 use crate::window_handler::{UserEvent, WindowHandler};
+
 use tao::event::Event;
 use tao::event_loop::ControlFlow;
 use tao::event_loop::EventLoop;
@@ -15,7 +16,7 @@ pub struct App {
     pub key_handler: KeyHandler,
     pub menu_handler: MenuHandler,
     pub tray_handler: TrayHandler,
-    pub player_state: Option<PlayerState>,
+    pub player_state: PlayerState,
 }
 
 impl App {
@@ -25,7 +26,7 @@ impl App {
         let key_handler = KeyHandler::new().register_keys();
         let menu_handler = MenuHandler::new(&preferences);
         let tray_handler = TrayHandler::new(&menu_handler);
-        let player_state = None;
+        let player_state = PlayerState::new();
 
         Self {
             window_handler,

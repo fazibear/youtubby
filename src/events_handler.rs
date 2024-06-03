@@ -10,9 +10,11 @@ pub fn callback(app: &mut App, event: &Event<UserEvent>, control_flow: &mut Cont
     *control_flow = ControlFlow::Wait;
 
     match event {
-        Event::UserEvent(UserEvent::PlayerStateUpdated(meta)) => {
+        Event::UserEvent(UserEvent::PlayerStateUpdated(state)) => {
+            app.player_state = state.clone();
+            println!("{:?}", state);
             tray_handler::refresh(app);
-            app.player_state = Some(meta.clone());
+            last_fm::submit(app);
         }
         Event::WindowEvent {
             event: WindowEvent::Focused(false),

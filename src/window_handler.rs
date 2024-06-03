@@ -24,15 +24,7 @@ pub static URL: &str = "https://music.youtube.com";
 pub static WINDOW_SIZE: PhysicalSize<u32> = PhysicalSize::new(WINDOW_WIDTH, WINDOW_HEIGHT);
 pub static WINDOW_MIN_SIZE: LogicalSize<u32> = LogicalSize::new(320, 0);
 
-use serde::{Deserialize, Serialize};
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct PlayerState {
-    pub title: String,
-    pub artist: String,
-    pub album: String,
-    pub state: String,
-}
+use crate::player_state::PlayerState;
 
 #[derive(Debug)]
 pub enum UserEvent {
