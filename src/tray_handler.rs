@@ -1,6 +1,9 @@
 use crate::app::App;
+use crate::window_handler::PlayerState;
 use crate::{assets, menu_handler::MenuHandler};
 use tray_icon::{Icon, TrayIcon, TrayIconBuilder, TrayIconEvent, TrayIconEventReceiver};
+
+const MAX_PLAYER_INFO_STRING_LENGTH: usize = 46;
 
 pub struct TrayHandler {
     pub icon: TrayIcon,
@@ -24,21 +27,44 @@ impl TrayHandler {
 
         Self { channel, icon }
     }
+}
 
-    pub fn refresh(&self, state: &App) {
-        let tray = if state.preferences.show_info_in_tray {
-            Some(state.player_info.clone())
+pub fn refresh(app: &mut App) {
+    let tray = if app.preferences.show_info_in_tray {
+        player_info(&app.player_state)
+    } else {
+        None
+    };
+
+    let tooltip = if app.preferences.show_info_in_tooltip {
+        player_info(&app.player_state)
+    } else {
+        None
+    };
+
+    app.tray_handler.icon.set_title(tray);
+    app.tray_handler
+        .icon
+        .set_tooltip(tooltip)
+        .expect("set tooltip value");
+}
+
+pub fn player_info(player_state: &Option<PlayerState>) -> Option<String> {
+    if let Some(ref meta) = player_state {
+        let play = if meta.state == "playing" {
+            "▶"
         } else {
-            None
+            "⏸"
         };
+        let mut info = format!("{} {} - {}", play, meta.artist, meta.title);
 
-        let tooltip = if state.preferences.show_info_in_tooltip {
-            Some(state.player_info.clone())
-        } else {
-            None
-        };
+        if info.len() > MAX_PLAYER_INFO_STRING_LENGTH {
+            info.truncate(MAX_PLAYER_INFO_STRING_LENGTH);
+            info.push_str("...");
+        }
 
-        self.icon.set_title(tray);
-        self.icon.set_tooltip(tooltip).expect("set tooltip value");
+        Some(info)
+    } else {
+        None
     }
 }
