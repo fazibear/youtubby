@@ -30,11 +30,37 @@ impl PlayerState {
 
     pub fn update(&mut self, new: &PlayerState) {
         let mut newnew = new.clone();
-        match (&self.state, &new.state) {
-            (State::Playing(duration), State::Paused(_)) => {
+        match (&self, new) {
+            (
+                PlayerState {
+                    state: State::Playing(duration),
+                    artist: old_a,
+                    track: old_t,
+                    ..
+                },
+                PlayerState {
+                    state: State::Paused(_),
+                    artist: new_a,
+                    track: new_t,
+                    ..
+                },
+            ) if old_a == new_a && old_t == new_t => {
                 newnew.state = State::Paused(*duration);
             }
-            (State::Paused(duration), State::Playing(_)) => {
+            (
+                PlayerState {
+                    state: State::Paused(duration),
+                    artist: old_a,
+                    track: old_t,
+                    ..
+                },
+                PlayerState {
+                    state: State::Playing(_),
+                    artist: new_a,
+                    track: new_t,
+                    ..
+                },
+            ) if old_a == new_a && old_t == new_t => {
                 newnew.state = State::Playing(*duration);
             }
             _ => {}
