@@ -3,7 +3,7 @@ use std::time::{SystemTime, UNIX_EPOCH};
 use crate::app::App;
 use crate::player_state::{self, PlayerState};
 use serde::{Deserialize, Serialize};
-use url::{Url, UrlQuery};
+use url::Url;
 
 use serde_json_path::JsonPath;
 use url_encoded_data::UrlEncodedData;
@@ -26,6 +26,7 @@ pub fn submit(app: &mut App) {
         state: player_state::State::PLAYING,
         track: Some(ref track),
         artist: Some(ref artist),
+        ref album,
         ..
     } = app.player_state
     {
@@ -42,6 +43,10 @@ pub fn submit(app: &mut App) {
                 .append_pair("track[0]", track)
                 .append_pair("timestamp[0]", &timestamp.as_secs().to_string())
                 .append_pair("sk", sk);
+
+            if let Some(ref album) = album {
+                url.query_pairs_mut().append_pair("album[0]", album);
+            };
 
             let (_, query2) = prepare_url(&mut url);
             let test = query2.as_str();
