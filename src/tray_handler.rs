@@ -51,9 +51,9 @@ pub fn refresh(app: &mut App) {
 
 pub fn player_info(state: &PlayerState) -> Option<String> {
     let icon = match state.state {
-        player_state::State::PLAYING => "󰐊",
-        player_state::State::STOP => "󰓛",
-        player_state::State::PAUSED => "󰏤",
+        player_state::State::Playing(_) => "󰐊",
+        player_state::State::Paused(_) => "󰏤",
+        player_state::State::Stop => "󰓛",
     };
 
     if let PlayerState {
