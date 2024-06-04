@@ -38,9 +38,9 @@ impl WindowHandler {
 
         let ipc = move |req: Request<String>| {
             proxy
-                .send_event(UserEvent::PlayerStateUpdated(PlayerState::from_json(
-                    req.body(),
-                )))
+                .send_event(UserEvent::PlayerStateUpdated(
+                    PlayerState::from_json_string(req.body()),
+                ))
                 .unwrap();
         };
 

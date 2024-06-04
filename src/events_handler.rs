@@ -11,10 +11,11 @@ pub fn callback(app: &mut App, event: &Event<UserEvent>, control_flow: &mut Cont
 
     match event {
         Event::UserEvent(UserEvent::PlayerStateUpdated(state)) => {
-            app.player_state = state.clone();
             println!("{:?}", state);
+            app.player_state.update(state);
+            last_fm::track_update_now_playing(app);
+            last_fm::track_scrobble(app);
             tray_handler::refresh(app);
-            last_fm::submit(app);
         }
         Event::WindowEvent {
             event: WindowEvent::Focused(false),

@@ -30,8 +30,11 @@ impl WindowHandler {
         let proxy = event_loop.create_proxy();
 
         let ipc = move |req: Request<String>| {
-            let p: PlayerState = serde_json::from_str(req.body()).unwrap();
-            proxy.send_event(UserEvent::PlayerStateUpdated(p)).unwrap();
+            proxy
+                .send_event(UserEvent::PlayerStateUpdated(
+                    PlayerState::from_json_string(req.body()),
+                ))
+                .unwrap();
         };
 
         let webview = builder

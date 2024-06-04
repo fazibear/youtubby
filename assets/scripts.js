@@ -22,26 +22,16 @@ function PlayPauseClick() {
 
 function Checker(){
   let metadata = navigator.mediaSession.metadata;
-  if(!metadata){ return };
-  let state = {};
-
-  if(metadata.artist.length > 0) { state['artist'] = metadata.artist };
-  if(metadata.title.length > 0) { state['track'] = metadata.title };
-  if(metadata.album.length > 0) { state['album'] = metadata.album };
-
-  state['state'] =  navigator.mediaSession.playbackState.toUpperCase();
-
-  state = JSON.stringify(state);
-
-  console.log("state:");
-  console.log(state);
-  console.log("old_state:");
-  console.log(navigator.old_state);
-
-  if(state !== navigator.old_state) {
-    console.log("send!!!");
-    navigator.old_state = state;
-    window.ipc.postMessage(state);
+  if(!metadata){ return }
+  meta = JSON.stringify({
+    artist: metadata.artist,
+    title: metadata.title,
+    album: metadata.album,
+    state: navigator.mediaSession.playbackState
+  })
+  if(meta !== navigator.oldmeta) {
+    navigator.oldmeta = meta;
+    window.ipc.postMessage(meta);
   }
 }
 
