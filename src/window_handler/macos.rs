@@ -1,14 +1,11 @@
+use crate::window_handler::{UserEvent, URL, USER_AGENT, WINDOW_MIN_SIZE, WINDOW_SIZE};
+use crate::{assets, player_state::PlayerState};
+use tao::platform::macos::{EventLoopExtMacOS, WindowBuilderExtMacOS};
 use tao::{
     event_loop::EventLoop,
     window::{Icon, Window, WindowBuilder},
 };
 use wry::{http::Request, WebView, WebViewBuilder};
-
-use crate::{assets, player_state::PlayerState};
-
-use tao::platform::macos::{EventLoopExtMacOS, WindowBuilderExtMacOS};
-
-use crate::window_handler::{UserEvent, URL, USER_AGENT, WINDOW_MIN_SIZE, WINDOW_SIZE};
 
 pub struct WindowHandler {
     pub window: Window,
