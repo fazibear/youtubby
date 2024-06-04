@@ -1,15 +1,11 @@
+use crate::window_handler::{UserEvent, URL, USER_AGENT, WINDOW_MIN_SIZE, WINDOW_SIZE};
+use crate::{assets, player_state::PlayerState};
+use tao::platform::unix::WindowBuilderExtUnix;
 use tao::{
     event_loop::EventLoop,
     window::{Icon, Window, WindowBuilder},
 };
 use wry::{http::Request, WebView, WebViewBuilder};
-
-use crate::window_handler::{
-    PlayerState, UserEvent, URL, USER_AGENT, WINDOW_MIN_SIZE, WINDOW_SIZE,
-};
-use crate::{assets, player_state::PlayerState};
-
-use tao::platform::unix::WindowBuilderExtUnix;
 
 pub struct WindowHandler {
     pub window: Window,
@@ -62,7 +58,7 @@ impl WindowHandler {
         WindowHandler { window, webview }
     }
 
-    pub fn open_url(url: &str) {
+    pub fn open_url(&self, url: &str) {
         let _ = std::process::Command::new("xdg-open").arg(url).output();
     }
 }
