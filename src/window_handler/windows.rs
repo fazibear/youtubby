@@ -15,7 +15,7 @@ pub struct WindowHandler {
 
 impl WindowHandler {
     pub fn init(event_loop: &mut EventLoop<UserEvent>) -> Result<WindowHandler> {
-        let (icon, icon_width, icon_height) = assets::get_image(assets::ICON);
+        let (icon, icon_width, icon_height) = assets::get_image(assets::ICON)?;
         let window = WindowBuilder::new()
             .with_title("Youtubby")
             .with_inner_size(WINDOW_SIZE)
@@ -43,7 +43,7 @@ impl WindowHandler {
             .with_autoplay(true)
             .build()?;
 
-        WindowHandler { window, webview }
+        Ok(WindowHandler { window, webview })
     }
 
     pub fn open_url(&self, url: &str) {
@@ -56,11 +56,11 @@ impl WindowHandler {
         unsafe {
             shell32::ShellExecuteA(
                 ptr::null_mut(),
-                CString::new("open")?.unwrap().as_ptr(),
+                CString::new("open").unwrap().as_ptr(),
                 CString::new(url.replace("\n", "%0A")).unwrap().as_ptr(),
                 ptr::null(),
                 ptr::null(),
-                winapi::SW_SHOWNORMAL,
+                1,
             );
         }
     }
