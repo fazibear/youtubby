@@ -1,24 +1,15 @@
 use crate::assets;
 use crate::preferences::Preferences;
-use muda::{
-    AboutMetadata, CheckMenuItem, Menu, MenuEvent, MenuEventReceiver, MenuId, MenuItem,
-    PredefinedMenuItem, Submenu,
-};
+use muda::{AboutMetadata, CheckMenuItem, Menu, MenuId, MenuItem, PredefinedMenuItem, Submenu};
 
 pub struct MenuHandler {
-    pub channel: &'static MenuEventReceiver,
     pub menu: Menu,
     pub last_fm: MenuItem,
 }
 
 impl MenuHandler {
     pub fn new(preferences: &Preferences) -> Self {
-        let last_fm = MenuItem::with_id(
-            MenuId::new("lastfm_auth"),
-            "Authenticate Last.fm",
-            true,
-            None,
-        );
+        let last_fm = MenuItem::with_id("lastfm_auth", "Authenticate Last.fm", true, None);
 
         let menu = Menu::new();
 
@@ -76,12 +67,6 @@ impl MenuHandler {
         ])
             .unwrap();
 
-        let channel = MenuEvent::receiver();
-
-        Self {
-            channel,
-            menu,
-            last_fm,
-        }
+        Self { menu, last_fm }
     }
 }

@@ -2,6 +2,7 @@ use crate::app::App;
 use crate::window_handler::UserEvent;
 use crate::{last_fm, tray_handler};
 use global_hotkey::{GlobalHotKeyEvent, HotKeyState};
+use muda::MenuEvent;
 use tao::event::{Event, WindowEvent};
 use tao::event_loop::ControlFlow;
 use tray_icon::{MouseButton, MouseButtonState, TrayIconEvent, TrayIconId};
@@ -28,7 +29,7 @@ pub fn callback(app: &mut App, event: &Event<UserEvent>, control_flow: &mut Cont
         _e => {} //println!("{:?}", e),
     };
 
-    if let Ok(event) = app.key_handler.channel.try_recv() {
+    if let Ok(event) = GlobalHotKeyEvent::receiver().try_recv() {
         match event {
             GlobalHotKeyEvent {
                 id,
@@ -39,11 +40,12 @@ pub fn callback(app: &mut App, event: &Event<UserEvent>, control_flow: &mut Cont
                     app.window_handler.webview.evaluate_script(js).unwrap()
                 }
             }
-            e => println!("{:?}", e),
+            _e => {} //println!("{:?}", e),
         }
     }
 
-    if let Ok(event) = app.tray_handler.channel.try_recv() {
+    if let Ok(event) = TrayIconEvent::receiver().try_recv() {
+        println!("e");
         match event {
             TrayIconEvent::Click {
                 id: TrayIconId(id),
@@ -56,7 +58,8 @@ pub fn callback(app: &mut App, event: &Event<UserEvent>, control_flow: &mut Cont
         }
     }
 
-    if let Ok(event) = app.menu_handler.channel.try_recv() {
+    if let Ok(event) = MenuEvent::receiver().try_recv() {
+        println!("menu");
         match event.id.0.as_str() {
             "show" => app.window_handler.show(),
             "playstop" => app
