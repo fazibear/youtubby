@@ -1,9 +1,9 @@
-use std::collections::HashMap;
-
+use anyhow::Result;
 use global_hotkey::{
     hotkey::{Code, HotKey},
     GlobalHotKeyManager,
 };
+use std::collections::HashMap;
 
 pub struct KeyHandler {
     pub manager: GlobalHotKeyManager,
@@ -11,11 +11,11 @@ pub struct KeyHandler {
 }
 
 impl KeyHandler {
-    pub fn new() -> KeyHandler {
+    pub fn init() -> Result<KeyHandler> {
         let keys = HashMap::new();
-        let manager = GlobalHotKeyManager::new().unwrap();
+        let manager = GlobalHotKeyManager::new()?;
 
-        KeyHandler { manager, keys }
+        Ok(KeyHandler { manager, keys })
     }
 
     pub fn register_keys(mut self) -> KeyHandler {

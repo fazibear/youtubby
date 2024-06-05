@@ -1,6 +1,7 @@
 use crate::app::App;
 use crate::player_state::{self, PlayerState};
 use crate::{assets, menu_handler::MenuHandler};
+use anyhow::Result;
 use tray_icon::{Icon, TrayIcon, TrayIconBuilder};
 
 const MAX_PLAYER_INFO_STRING_LENGTH: usize = 46;
@@ -10,22 +11,21 @@ pub struct TrayHandler {
 }
 
 impl TrayHandler {
-    pub fn new(menu_handler: &MenuHandler) -> TrayHandler {
-        let (icon_data, icon_width, icon_height) = assets::get_image(assets::ICON);
-        let icon_data = Icon::from_rgba(icon_data, icon_width, icon_height).unwrap();
+    pub fn init(menu_handler: &MenuHandler) -> Result<TrayHandler> {
+        let (icon_data, icon_width, icon_height) = assets::get_image(assets::ICON)?;
+        let icon_data = Icon::from_rgba(icon_data, icon_width, icon_height)?;
         let icon = TrayIconBuilder::new()
             .with_id("0")
             .with_menu(Box::new(menu_handler.menu.clone()))
             .with_menu_on_left_click(false)
             .with_icon(icon_data)
-            .build()
-            .unwrap();
+            .build()?;
 
-        Self { icon }
+        Ok(Self { icon })
     }
 }
 
-pub fn refresh(app: &mut App) {
+pub fn refresh(app: &mut App) -> Result<()> {
     let tray = if app.preferences.show_info_in_tray {
         player_info(&app.player_state)
     } else {
@@ -39,10 +39,8 @@ pub fn refresh(app: &mut App) {
     };
 
     app.tray_handler.icon.set_title(tray);
-    app.tray_handler
-        .icon
-        .set_tooltip(tooltip)
-        .expect("set tooltip value");
+    app.tray_handler.icon.set_tooltip(tooltip)?;
+    Ok(())
 }
 
 pub fn player_info(state: &PlayerState) -> Option<String> {
@@ -58,7 +56,7 @@ pub fn player_info(state: &PlayerState) -> Option<String> {
         ..
     } = state
     {
-        let mut info = format!("{} {} - {}", icon, artist, track);
+        let mut info = format!("{icon} {artist} - {track}");
 
         if info.len() > MAX_PLAYER_INFO_STRING_LENGTH {
             info.truncate(MAX_PLAYER_INFO_STRING_LENGTH);

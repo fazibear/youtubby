@@ -1,3 +1,4 @@
+use anyhow::Result;
 use std::collections::HashMap;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
@@ -68,15 +69,15 @@ impl PlayerState {
         *self = newnew;
     }
 
-    pub fn from_json_string(json: &str) -> PlayerState {
-        let meta: HashMap<&str, &str> = serde_json::from_str(json).unwrap();
+    pub fn from_json_string(json: &str) -> Result<PlayerState> {
+        let meta: HashMap<&str, &str> = serde_json::from_str(json)?;
 
         let start = SystemTime::now();
         let timestamp = start
             .duration_since(UNIX_EPOCH)
             .expect("Time went backwards");
 
-        Self {
+        Ok(Self {
             artist: Self::to_option_string(meta["artist"]),
             track: Self::to_option_string(meta["title"]),
             album: Self::to_option_string(meta["album"]),
@@ -85,7 +86,7 @@ impl PlayerState {
                 "paused" => State::Paused(timestamp),
                 _ => State::Stop,
             },
-        }
+        })
     }
 
     fn to_option_string(data: &str) -> Option<String> {

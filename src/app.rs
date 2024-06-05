@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use crate::events_handler;
 use crate::key_handler::KeyHandler;
 use crate::last_fm;
@@ -8,6 +6,9 @@ use crate::player_state::PlayerState;
 use crate::preferences::Preferences;
 use crate::tray_handler::TrayHandler;
 use crate::window_handler::{UserEvent, WindowHandler};
+use anyhow::Result;
+use simple_logger::SimpleLogger;
+use std::collections::HashMap;
 
 use tao::event::Event;
 use tao::event_loop::ControlFlow;
@@ -24,12 +25,14 @@ pub struct App {
 }
 
 impl App {
-    pub fn new(event_loop: &mut EventLoop<UserEvent>) -> App {
-        let preferences = Preferences::load();
-        let window_handler = WindowHandler::new(event_loop);
-        let key_handler = KeyHandler::new().register_keys();
-        let menu_handler = MenuHandler::new(&preferences);
-        let tray_handler = TrayHandler::new(&menu_handler);
+    pub fn new(event_loop: &mut EventLoop<UserEvent>) -> Result<App> {
+        Self::init_logger()?;
+
+        let preferences = Preferences::load()?;
+        let window_handler = WindowHandler::init(event_loop)?;
+        let key_handler = KeyHandler::init()?.register_keys();
+        let menu_handler = MenuHandler::init(&preferences)?;
+        let tray_handler = TrayHandler::init(&menu_handler)?;
         let player_state = PlayerState::new();
         let cache = HashMap::new();
 
@@ -45,10 +48,27 @@ impl App {
 
         last_fm::set_menu(&mut app);
 
-        app
+        Ok(app)
     }
 
     pub fn tick(&mut self, event: &Event<UserEvent>, control_flow: &mut ControlFlow) {
-        events_handler::callback(self, event, control_flow);
+        events_handler::callback(self, event, control_flow).expect("tick");
+    }
+
+    #[cfg(build = "release")]
+    fn init_logger() -> Result<()> {
+        SimpleLogger::new()
+            .with_level(log::LevelFilter::Off)
+            .init()?;
+
+        Ok(())
+    }
+
+    #[cfg(not(build = "release"))]
+    fn init_logger() -> Result<()> {
+        SimpleLogger::new()
+            .with_level(log::LevelFilter::Info)
+            .init()?;
+        Ok(())
     }
 }
