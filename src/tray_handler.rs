@@ -18,7 +18,6 @@ impl TrayHandler {
             .with_menu(Box::new(menu_handler.menu.clone()))
             .with_menu_on_left_click(false)
             .with_icon(icon_data)
-            .with_menu_on_left_click(true)
             .build()
             .unwrap();
 

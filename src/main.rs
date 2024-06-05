@@ -9,8 +9,8 @@ mod preferences;
 mod tray_handler;
 mod window_handler;
 
-use self::window_handler::UserEvent;
 use tao::event_loop::EventLoopBuilder;
+use window_handler::UserEvent;
 
 fn main() -> wry::Result<()> {
     let mut event_loop = EventLoopBuilder::<UserEvent>::with_user_event().build();

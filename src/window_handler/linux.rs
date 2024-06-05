@@ -1,11 +1,11 @@
 use crate::window_handler::{UserEvent, URL, USER_AGENT, WINDOW_MIN_SIZE, WINDOW_SIZE};
 use crate::{assets, player_state::PlayerState};
-use tao::platform::unix::WindowBuilderExtUnix;
+use tao::platform::unix::{WindowBuilderExtUnix, WindowExtUnix};
 use tao::{
     event_loop::EventLoop,
     window::{Icon, Window, WindowBuilder},
 };
-use wry::{http::Request, WebView, WebViewBuilder};
+use wry::{http::Request, WebView, WebViewBuilder, WebViewBuilderExtUnix};
 
 pub struct WindowHandler {
     pub window: Window,
@@ -30,8 +30,6 @@ impl WindowHandler {
             .unwrap();
 
         let builder = {
-            use tao::platform::unix::WindowExtUnix;
-            use wry::WebViewBuilderExtUnix;
             let vbox = window.default_vbox().unwrap();
             WebViewBuilder::new_gtk(vbox)
         };
