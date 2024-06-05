@@ -84,7 +84,10 @@ pub fn callback(app: &mut App, event: &Event<UserEvent>, control_flow: &mut Cont
                 app.preferences.save();
                 tray_handler::refresh(app);
             }
-            "lastfm_auth" => last_fm::menu_click(app),
+            "last_fm_action" => {
+                last_fm::menu_click(app);
+                last_fm::set_menu(app);
+            }
             _e => {} // println!("{:?}", e),
         }
     }

@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 use crate::events_handler;
 use crate::key_handler::KeyHandler;
+use crate::last_fm;
 use crate::menu_handler::MenuHandler;
 use crate::player_state::PlayerState;
 use crate::preferences::Preferences;
@@ -32,7 +33,7 @@ impl App {
         let player_state = PlayerState::new();
         let cache = HashMap::new();
 
-        Self {
+        let mut app = Self {
             window_handler,
             key_handler,
             menu_handler,
@@ -40,7 +41,11 @@ impl App {
             preferences,
             player_state,
             cache,
-        }
+        };
+
+        last_fm::set_menu(&mut app);
+
+        app
     }
 
     pub fn tick(&mut self, event: &Event<UserEvent>, control_flow: &mut ControlFlow) {

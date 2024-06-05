@@ -4,13 +4,12 @@ use muda::{AboutMetadata, CheckMenuItem, Menu, MenuId, MenuItem, PredefinedMenuI
 
 pub struct MenuHandler {
     pub menu: Menu,
-    pub last_fm: MenuItem,
+    pub last_fm_info: MenuItem,
+    pub last_fm_action: MenuItem,
 }
 
 impl MenuHandler {
     pub fn new(preferences: &Preferences) -> Self {
-        let last_fm = MenuItem::with_id("lastfm_auth", "Authenticate Last.fm", true, None);
-
         let menu = Menu::new();
 
         let prefs = Submenu::new("Preferences", true);
@@ -37,6 +36,18 @@ impl MenuHandler {
                     preferences.show_info_in_tooltip,
                     None,
                 ),
+            ])
+            .unwrap();
+
+        let last_fm = Submenu::new("Last.fm", true);
+        let last_fm_info = MenuItem::with_id("last_fm_info", "", false, None);
+        let last_fm_action = MenuItem::with_id("last_fm_action", "", true, None);
+
+        last_fm
+            .append_items(&[
+                &last_fm_info,
+                &PredefinedMenuItem::separator(),
+                &last_fm_action,
             ])
             .unwrap();
 
@@ -67,6 +78,10 @@ impl MenuHandler {
         ])
             .unwrap();
 
-        Self { menu, last_fm }
+        Self {
+            menu,
+            last_fm_info,
+            last_fm_action,
+        }
     }
 }

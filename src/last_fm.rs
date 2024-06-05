@@ -1,6 +1,7 @@
 use crate::app::App;
 use crate::player_state::{self, PlayerState};
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 use serde_json_path::JsonPath;
 use url::Url;
 use url_encoded_data::UrlEncodedData;
@@ -15,7 +16,7 @@ const API_URL: &str = "https://ws.audioscrobbler.com/2.0/";
 pub enum State {
     None,
     Waiting(String),
-    Connected(String),
+    Connected((String, String)),
 }
 
 pub fn track_update_now_playing(app: &mut App) {
@@ -27,7 +28,7 @@ pub fn track_update_now_playing(app: &mut App) {
         ..
     } = app.player_state
     {
-        if let State::Connected(ref sk) = app.preferences.last_fm {
+        if let State::Connected((_, ref sk)) = app.preferences.last_fm {
             let mut url = Url::parse(API_URL).expect("OK");
             url.query_pairs_mut()
                 .append_pair("api_key", API_KEY)
@@ -60,11 +61,9 @@ pub fn track_update_now_playing(app: &mut App) {
 
             println!("{}", encoded);
 
-            let client = reqwest::blocking::Client::new();
-            let res = client.post(API_URL).body(encoded).send().expect("ok");
-            let text = res.text().expect("ok");
+            let json = post_json(url);
 
-            println!("response: {:?}", text);
+            println!("response: {:?}", json);
         }
     }
 }
@@ -78,7 +77,7 @@ pub fn track_scrobble(app: &mut App) {
         ..
     } = app.player_state
     {
-        if let State::Connected(ref sk) = app.preferences.last_fm {
+        if let State::Connected((_, ref sk)) = app.preferences.last_fm {
             let mut url = Url::parse(API_URL).expect("OK");
             url.query_pairs_mut()
                 .append_pair("api_key", API_KEY)
@@ -107,16 +106,32 @@ pub fn track_scrobble(app: &mut App) {
                 .append_pair("api_sig", &sig)
                 .append_pair("format", "json");
 
-            let query = url.query().unwrap();
-            let encoded = UrlEncodedData::from(query).to_string();
+            let json = post_json(url);
 
-            println!("{}", encoded);
+            println!("response: {:?}", json);
+        }
+    }
+}
 
-            let client = reqwest::blocking::Client::new();
-            let res = client.post(API_URL).body(encoded).send().expect("ok");
-            let text = res.text().expect("ok");
-
-            println!("response: {:?}", text);
+pub fn set_menu(app: &mut App) {
+    match app.preferences.last_fm {
+        State::None => {
+            app.menu_handler.last_fm_info.set_text("Not logged in");
+            app.menu_handler.last_fm_action.set_text("Authenticate");
+        }
+        State::Waiting(_) => {
+            app.menu_handler
+                .last_fm_info
+                .set_text("Waiting for confirmation");
+            app.menu_handler
+                .last_fm_action
+                .set_text("Confirm authentication");
+        }
+        State::Connected((ref name, _)) => {
+            app.menu_handler
+                .last_fm_info
+                .set_text(format!("Logged as: {}", name));
+            app.menu_handler.last_fm_action.set_text("Log out!");
         }
     }
 }
@@ -127,15 +142,11 @@ pub fn menu_click(app: &mut App) {
             if let Some(token) = auth_get_token() {
                 app.window_handler.open_url(&auth_url(&token));
                 app.preferences.last_fm = State::Waiting(token.to_string());
-                app.menu_handler
-                    .last_fm
-                    .set_text("LastFM Continue authentication");
             }
         }
         State::Waiting(ref token) => {
-            if let Some(key) = auth_get_session(token) {
-                app.preferences.last_fm = State::Connected(key.to_string());
-                app.menu_handler.last_fm.set_text("LastFM Logout");
+            if let Some((user, key)) = auth_get_session(token) {
+                app.preferences.last_fm = State::Connected((user.to_string(), key.to_string()));
             }
         }
         State::Connected(_) => {
@@ -152,7 +163,7 @@ fn auth_url(token: &str) -> String {
     url.to_string()
 }
 
-fn auth_get_session(token: &str) -> Option<String> {
+fn auth_get_session(token: &str) -> Option<(String, String)> {
     let mut url = Url::parse(API_URL).expect("OK");
     url.query_pairs_mut()
         .append_pair("api_key", API_KEY)
@@ -165,10 +176,14 @@ fn auth_get_session(token: &str) -> Option<String> {
         .append_pair("api_sig", &sig)
         .append_pair("format", "json");
 
-    let client = reqwest::blocking::Client::new();
-    let json = client.get(url).send().expect("ok").text().expect("ok");
+    let json = get_json(url);
 
-    fetch_key_from_json(json, "$.session.key")
+    println!("{}", json);
+
+    Some((
+        query_json_value(&json, "$.session.name"),
+        query_json_value(&json, "$.session.key"),
+    ))
 }
 
 fn auth_get_token() -> Option<String> {
@@ -183,10 +198,9 @@ fn auth_get_token() -> Option<String> {
         .append_pair("api_sig", &sig)
         .append_pair("format", "json");
 
-    let client = reqwest::blocking::Client::new();
-    let json = client.get(url).send().expect("ok").text().expect("ok");
+    let json = get_json(url);
 
-    fetch_key_from_json(json, "$.token")
+    Some(query_json_value(&json, "$.token"))
 }
 
 fn generate_signature(url: &mut Url) -> String {
@@ -203,18 +217,36 @@ fn generate_signature(url: &mut Url) -> String {
     )
 }
 
-fn fetch_key_from_json(resp: String, path_str: &str) -> Option<String> {
-    println!("{}", resp);
+fn get_json(url: Url) -> Value {
+    let client = reqwest::blocking::Client::new();
+    let response = client.get(url).send().expect("ok").text().expect("ok");
+    serde_json::from_str(&response).expect("ok")
+}
 
-    let json = serde_json::from_str(&resp).expect("ok");
+fn post_json(url: Url) -> Value {
+    let host_path = format!(
+        "{}://{}{}",
+        url.scheme(),
+        url.host().expect("ok"),
+        url.path()
+    );
+    let query = url.query().expect("ok");
+    let client = reqwest::blocking::Client::new();
+    let encoded = UrlEncodedData::from(query).to_string();
+    println!("{}", host_path);
+    let res = client.post(host_path).body(encoded).send().expect("ok");
+    let text = res.text().expect("ok");
+    serde_json::from_str(&text).expect("ok")
+}
 
+fn query_json_value(json: &Value, path_str: &str) -> String {
     let path = JsonPath::parse(path_str).expect("ok");
     let val = path
-        .query(&json)
+        .query(json)
         .exactly_one()
         .expect("ok")
         .as_str()
         .expect("ok");
 
-    Some(val.to_string())
+    val.to_string()
 }
