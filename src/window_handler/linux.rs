@@ -1,6 +1,6 @@
 use crate::window_handler::{UserEvent, URL, USER_AGENT, WINDOW_MIN_SIZE, WINDOW_SIZE};
 use crate::{assets, player_state::PlayerState};
-use anyhow::Result;
+use anyhow::{Context, Result};
 use tao::platform::unix::{WindowBuilderExtUnix, WindowExtUnix};
 use tao::{
     event_loop::EventLoop,
