@@ -8,7 +8,7 @@ use tao::event_loop::ControlFlow;
 use tray_icon::{MouseButton, MouseButtonState, TrayIconEvent, TrayIconId};
 
 pub fn callback(app: &mut App, event: &Event<UserEvent>, control_flow: &mut ControlFlow) {
-    *control_flow = ControlFlow::Wait;
+    *control_flow = ControlFlow::Poll;
 
     match event {
         Event::UserEvent(UserEvent::PlayerStateUpdated(state)) => {
@@ -45,7 +45,6 @@ pub fn callback(app: &mut App, event: &Event<UserEvent>, control_flow: &mut Cont
     }
 
     if let Ok(event) = TrayIconEvent::receiver().try_recv() {
-        println!("e");
         match event {
             TrayIconEvent::Click {
                 id: TrayIconId(id),
@@ -57,9 +56,7 @@ pub fn callback(app: &mut App, event: &Event<UserEvent>, control_flow: &mut Cont
             _e => {} // println!("{:?}", e),
         }
     }
-
     if let Ok(event) = MenuEvent::receiver().try_recv() {
-        println!("menu");
         match event.id.0.as_str() {
             "show" => app.window_handler.show(),
             "playstop" => app
