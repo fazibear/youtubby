@@ -241,12 +241,7 @@ fn post_json(url: Url) -> Value {
 
 fn query_json_value(json: &Value, path_str: &str) -> String {
     let path = JsonPath::parse(path_str).expect("ok");
-    let val = path
-        .query(json)
-        .exactly_one()
-        .expect("ok")
-        .as_str()
-        .expect("ok");
+    let val = path.query(json).first().expect("ok");
 
     val.to_string()
 }
