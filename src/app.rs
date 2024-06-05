@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::events_handler;
 use crate::key_handler::KeyHandler;
 use crate::menu_handler::MenuHandler;
@@ -17,6 +19,7 @@ pub struct App {
     pub menu_handler: MenuHandler,
     pub tray_handler: TrayHandler,
     pub player_state: PlayerState,
+    pub cache: HashMap<String, String>,
 }
 
 impl App {
@@ -27,6 +30,7 @@ impl App {
         let menu_handler = MenuHandler::new(&preferences);
         let tray_handler = TrayHandler::new(&menu_handler);
         let player_state = PlayerState::new();
+        let cache = HashMap::new();
 
         Self {
             window_handler,
@@ -35,6 +39,7 @@ impl App {
             tray_handler,
             preferences,
             player_state,
+            cache,
         }
     }
 

@@ -42,6 +42,15 @@ pub fn track_update_now_playing(app: &mut App) {
 
             let sig = generate_signature(&mut url);
 
+            if let Some(old_sig) = app.cache.get("track_update_now_playing_last_sig") {
+                if *old_sig == sig {
+                    return;
+                }
+            }
+
+            app.cache
+                .insert("track_update_now_playing_last_sig".to_string(), sig.clone());
+
             url.query_pairs_mut()
                 .append_pair("api_sig", &sig)
                 .append_pair("format", "json");
@@ -84,6 +93,15 @@ pub fn track_scrobble(app: &mut App) {
             };
 
             let sig = generate_signature(&mut url);
+
+            if let Some(old_sig) = app.cache.get("track_scrobble_last_sig") {
+                if *old_sig == sig {
+                    return;
+                }
+            }
+
+            app.cache
+                .insert("track_scrobble_last_sig".to_string(), sig.clone());
 
             url.query_pairs_mut()
                 .append_pair("api_sig", &sig)
