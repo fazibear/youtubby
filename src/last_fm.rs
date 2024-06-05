@@ -1,5 +1,7 @@
 use crate::app::App;
 use crate::player_state::{self, PlayerState};
+use anyhow::{Context, Result};
+use log::info;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use serde_json_path::JsonPath;
@@ -19,7 +21,7 @@ pub enum State {
     Connected((String, String)),
 }
 
-pub fn track_update_now_playing(app: &mut App) {
+pub fn track_update_now_playing(app: &mut App) -> Result<()> {
     if let PlayerState {
         state: player_state::State::Playing(_),
         track: Some(ref track),
@@ -29,7 +31,7 @@ pub fn track_update_now_playing(app: &mut App) {
     } = app.player_state
     {
         if let State::Connected((_, ref sk)) = app.preferences.last_fm {
-            let mut url = Url::parse(API_URL).expect("OK");
+            let mut url = Url::parse(API_URL)?;
             url.query_pairs_mut()
                 .append_pair("api_key", API_KEY)
                 .append_pair("method", "track.updateNowPlaying")
@@ -45,7 +47,7 @@ pub fn track_update_now_playing(app: &mut App) {
 
             if let Some(old_sig) = app.cache.get("track_update_now_playing_last_sig") {
                 if *old_sig == sig {
-                    return;
+                    return Ok(());
                 }
             }
 
@@ -56,19 +58,13 @@ pub fn track_update_now_playing(app: &mut App) {
                 .append_pair("api_sig", &sig)
                 .append_pair("format", "json");
 
-            let query = url.query().unwrap();
-            let encoded = UrlEncodedData::from(query).to_string();
-
-            println!("{}", encoded);
-
-            let json = post_json(url);
-
-            println!("response: {:?}", json);
+            post_json(url)?;
         }
     }
+    Ok(())
 }
 
-pub fn track_scrobble(app: &mut App) {
+pub fn track_scrobble(app: &mut App) -> Result<()> {
     if let PlayerState {
         state: player_state::State::Playing(timestamp),
         track: Some(ref track),
@@ -78,7 +74,7 @@ pub fn track_scrobble(app: &mut App) {
     } = app.player_state
     {
         if let State::Connected((_, ref sk)) = app.preferences.last_fm {
-            let mut url = Url::parse(API_URL).expect("OK");
+            let mut url = Url::parse(API_URL)?;
             url.query_pairs_mut()
                 .append_pair("api_key", API_KEY)
                 .append_pair("method", "track.scrobble")
@@ -95,7 +91,7 @@ pub fn track_scrobble(app: &mut App) {
 
             if let Some(old_sig) = app.cache.get("track_scrobble_last_sig") {
                 if *old_sig == sig {
-                    return;
+                    return Ok(());
                 }
             }
 
@@ -106,11 +102,10 @@ pub fn track_scrobble(app: &mut App) {
                 .append_pair("api_sig", &sig)
                 .append_pair("format", "json");
 
-            let json = post_json(url);
-
-            println!("response: {:?}", json);
+            post_json(url)?;
         }
     }
+    Ok(())
 }
 
 pub fn set_menu(app: &mut App) {
@@ -130,22 +125,22 @@ pub fn set_menu(app: &mut App) {
         State::Connected((ref name, _)) => {
             app.menu_handler
                 .last_fm_info
-                .set_text(format!("Logged as: {}", name));
+                .set_text(format!("Logged as: {name}"));
             app.menu_handler.last_fm_action.set_text("Log out!");
         }
     }
 }
 
-pub fn menu_click(app: &mut App) {
+pub fn menu_click(app: &mut App) -> Result<()> {
     match app.preferences.last_fm {
         State::None => {
-            if let Some(token) = auth_get_token() {
-                app.window_handler.open_url(&auth_url(&token));
+            if let Ok(token) = auth_get_token() {
+                app.window_handler.open_url(&auth_url(&token)?);
                 app.preferences.last_fm = State::Waiting(token.to_string());
             }
         }
         State::Waiting(ref token) => {
-            if let Some((user, key)) = auth_get_session(token) {
+            if let Ok((user, key)) = auth_get_session(token) {
                 app.preferences.last_fm = State::Connected((user.to_string(), key.to_string()));
             }
         }
@@ -153,18 +148,19 @@ pub fn menu_click(app: &mut App) {
             app.preferences.last_fm = State::None;
         }
     }
+    Ok(())
 }
 
-fn auth_url(token: &str) -> String {
-    let mut url = Url::parse(AUTH_URL).expect("OK");
+fn auth_url(token: &str) -> Result<String> {
+    let mut url = Url::parse(AUTH_URL).context("empty url")?;
     url.query_pairs_mut()
         .append_pair("api_key", API_KEY)
         .append_pair("token", token);
-    url.to_string()
+    Ok(url.to_string())
 }
 
-fn auth_get_session(token: &str) -> Option<(String, String)> {
-    let mut url = Url::parse(API_URL).expect("OK");
+fn auth_get_session(token: &str) -> Result<(String, String)> {
+    let mut url = Url::parse(API_URL)?;
     url.query_pairs_mut()
         .append_pair("api_key", API_KEY)
         .append_pair("method", "auth.getSession")
@@ -176,18 +172,16 @@ fn auth_get_session(token: &str) -> Option<(String, String)> {
         .append_pair("api_sig", &sig)
         .append_pair("format", "json");
 
-    let json = get_json(url);
+    let json = get_json(url)?;
 
-    println!("{}", json);
-
-    Some((
-        query_json_value(&json, "$.session.name"),
-        query_json_value(&json, "$.session.key"),
+    Ok((
+        query_json_value(&json, "$.session.name")?,
+        query_json_value(&json, "$.session.key")?,
     ))
 }
 
-fn auth_get_token() -> Option<String> {
-    let mut url = Url::parse(API_URL).expect("OK");
+fn auth_get_token() -> Result<String> {
+    let mut url = Url::parse(API_URL)?;
     url.query_pairs_mut()
         .append_pair("api_key", API_KEY)
         .append_pair("method", "auth.getToken");
@@ -198,15 +192,15 @@ fn auth_get_token() -> Option<String> {
         .append_pair("api_sig", &sig)
         .append_pair("format", "json");
 
-    let json = get_json(url);
+    let json = get_json(url)?;
 
-    Some(query_json_value(&json, "$.token"))
+    query_json_value(&json, "$.token")
 }
 
 fn generate_signature(url: &mut Url) -> String {
     let mut query = url
         .query_pairs()
-        .map(|(a, b)| format!("{}{}", a, b))
+        .map(|(a, b)| format!("{a}{b}"))
         .collect::<Vec<String>>();
 
     query.sort();
@@ -217,31 +211,44 @@ fn generate_signature(url: &mut Url) -> String {
     )
 }
 
-fn get_json(url: Url) -> Value {
+fn get_json(url: Url) -> Result<Value> {
     let client = reqwest::blocking::Client::new();
-    let response = client.get(url).send().expect("ok").text().expect("ok");
-    serde_json::from_str(&response).expect("ok")
+
+    info!("LastFM get url: {url}");
+
+    let response = client.get(url).send()?.text()?;
+    let json = serde_json::from_str(&response)?;
+
+    info!("LastFM get response {json}");
+
+    Ok(json)
 }
 
-fn post_json(url: Url) -> Value {
+fn post_json(url: Url) -> Result<Value> {
     let host_path = format!(
         "{}://{}{}",
         url.scheme(),
-        url.host().expect("ok"),
+        url.host().context("host missing")?,
         url.path()
     );
-    let query = url.query().expect("ok");
+    let query = url.query().context("context missing")?;
     let client = reqwest::blocking::Client::new();
     let encoded = UrlEncodedData::from(query).to_string();
-    println!("{}", host_path);
-    let res = client.post(host_path).body(encoded).send().expect("ok");
-    let text = res.text().expect("ok");
-    serde_json::from_str(&text).expect("ok")
+
+    info!("LastFM post request {query}");
+
+    let res = client.post(host_path).body(encoded).send()?;
+    let text = res.text()?;
+    let json = serde_json::from_str(&text)?;
+
+    info!("LastFM post response {json}");
+
+    Ok(json)
 }
 
-fn query_json_value(json: &Value, path_str: &str) -> String {
-    let path = JsonPath::parse(path_str).expect("ok");
-    let val = path.query(json).first().expect("ok");
+fn query_json_value(json: &Value, path_str: &str) -> Result<String> {
+    let path = JsonPath::parse(path_str)?;
+    let val = path.query(json).first().context("Empty value")?;
 
-    val.to_string()
+    Ok(val.to_string())
 }

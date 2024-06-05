@@ -1,5 +1,6 @@
 use crate::window_handler::{UserEvent, URL, USER_AGENT, WINDOW_MIN_SIZE, WINDOW_SIZE};
 use crate::{assets, player_state::PlayerState};
+use anyhow::Result;
 use tao::platform::windows::{EventLoopBuilderExtWindows, WindowExtWindows};
 use tao::{
     event_loop::EventLoop,
@@ -13,7 +14,7 @@ pub struct WindowHandler {
 }
 
 impl WindowHandler {
-    pub fn new(event_loop: &mut EventLoop<UserEvent>) -> WindowHandler {
+    pub fn init(event_loop: &mut EventLoop<UserEvent>) -> Result<WindowHandler> {
         let (icon, icon_width, icon_height) = assets::get_image(assets::ICON);
         let window = WindowBuilder::new()
             .with_title("Youtubby")
@@ -21,21 +22,16 @@ impl WindowHandler {
             .with_min_inner_size(WINDOW_MIN_SIZE)
             .with_visible(false)
             .with_focused(true)
-            .with_window_icon(Some(
-                Icon::from_rgba(icon, icon_width, icon_height).unwrap(),
-            ))
-            .build(event_loop)
-            .unwrap();
+            .with_window_icon(Some(Icon::from_rgba(icon, icon_width, icon_height)?))
+            .build(event_loop)?;
 
         let builder = WebViewBuilder::new(&window);
         let proxy = event_loop.create_proxy();
 
         let ipc = move |req: Request<String>| {
-            proxy
-                .send_event(UserEvent::PlayerStateUpdated(
-                    PlayerState::from_json_string(req.body()),
-                ))
-                .unwrap();
+            let _ = proxy.send_event(UserEvent::PlayerStateUpdated(
+                PlayerState::from_json_string(req.body()).expect("failed parse player state"),
+            ));
         };
 
         let webview = builder
@@ -45,8 +41,7 @@ impl WindowHandler {
             .with_initialization_script(assets::INIT_SCRIPT)
             .with_ipc_handler(ipc)
             .with_autoplay(true)
-            .build()
-            .unwrap();
+            .build()?;
 
         WindowHandler { window, webview }
     }
@@ -61,7 +56,7 @@ impl WindowHandler {
         unsafe {
             shell32::ShellExecuteA(
                 ptr::null_mut(),
-                CString::new("open").unwrap().as_ptr(),
+                CString::new("open")?.unwrap().as_ptr(),
                 CString::new(url.replace("\n", "%0A")).unwrap().as_ptr(),
                 ptr::null(),
                 ptr::null(),

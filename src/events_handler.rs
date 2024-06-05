@@ -1,22 +1,27 @@
 use crate::app::App;
 use crate::window_handler::UserEvent;
 use crate::{last_fm, tray_handler};
+use anyhow::Result;
 use global_hotkey::{GlobalHotKeyEvent, HotKeyState};
+use log::debug;
 use muda::MenuEvent;
 use tao::event::{Event, WindowEvent};
 use tao::event_loop::ControlFlow;
 use tray_icon::{MouseButton, MouseButtonState, TrayIconEvent, TrayIconId};
 
-pub fn callback(app: &mut App, event: &Event<UserEvent>, control_flow: &mut ControlFlow) {
+pub fn callback(
+    app: &mut App,
+    event: &Event<UserEvent>,
+    control_flow: &mut ControlFlow,
+) -> Result<()> {
     *control_flow = ControlFlow::Poll;
 
     match event {
         Event::UserEvent(UserEvent::PlayerStateUpdated(state)) => {
-            println!("{:?}", state);
             app.player_state.update(state);
-            last_fm::track_update_now_playing(app);
-            last_fm::track_scrobble(app);
-            tray_handler::refresh(app);
+            last_fm::track_update_now_playing(app)?;
+            last_fm::track_scrobble(app)?;
+            tray_handler::refresh(app)?;
         }
         Event::WindowEvent {
             event: WindowEvent::Focused(false),
@@ -25,11 +30,11 @@ pub fn callback(app: &mut App, event: &Event<UserEvent>, control_flow: &mut Cont
         Event::WindowEvent {
             event: WindowEvent::CloseRequested,
             ..
-        } => exit(control_flow, app),
+        } => exit(control_flow, app)?,
         Event::MainEventsCleared => {
             app.window_handler.window.request_redraw();
         }
-        _e => {} //println!("{:?}", e),
+        e => debug!("Event: {e:?}"),
     };
 
     if let Ok(event) = GlobalHotKeyEvent::receiver().try_recv() {
@@ -40,10 +45,10 @@ pub fn callback(app: &mut App, event: &Event<UserEvent>, control_flow: &mut Cont
                 ..
             } => {
                 if let Some(&js) = app.key_handler.keys.get(&id) {
-                    app.window_handler.webview.evaluate_script(js).unwrap()
+                    app.window_handler.webview.evaluate_script(js)?
                 }
             }
-            _e => {} //println!("{:?}", e),
+            e => debug!("GlobalHotKeyEvent: {e:?}"),
         }
     }
 
@@ -56,7 +61,7 @@ pub fn callback(app: &mut App, event: &Event<UserEvent>, control_flow: &mut Cont
                 rect,
                 ..
             } if id == "0" => app.window_handler.show_hide(rect.position),
-            _e => {} // println!("{:?}", e),
+            e => debug!("TrayIconEvent: {e:?}"),
         }
     }
     if let Ok(event) = MenuEvent::receiver().try_recv() {
@@ -65,35 +70,36 @@ pub fn callback(app: &mut App, event: &Event<UserEvent>, control_flow: &mut Cont
             "playstop" => app
                 .window_handler
                 .webview
-                .evaluate_script("PlayPauseClick()")
-                .unwrap(),
-            "next" => app.window_handler.webview.evaluate_script("").unwrap(),
-            "prev" => app.window_handler.webview.evaluate_script("").unwrap(),
-            "quit" => exit(control_flow, app),
+                .evaluate_script("PlayPauseClick()")?,
+            "next" => app.window_handler.webview.evaluate_script("")?,
+            "prev" => app.window_handler.webview.evaluate_script("")?,
+            "quit" => exit(control_flow, app)?,
             "hide_unfocused_window" => {
                 app.preferences.hide_unfocused_window = !app.preferences.hide_unfocused_window;
-                app.preferences.save();
-                tray_handler::refresh(app);
+                app.preferences.save()?;
+                tray_handler::refresh(app)?;
             }
             "show_info_in_tray" => {
                 app.preferences.show_info_in_tray = !app.preferences.show_info_in_tray;
-                tray_handler::refresh(app);
+                tray_handler::refresh(app)?;
             }
             "show_info_in_tooltip" => {
                 app.preferences.show_info_in_tooltip = !app.preferences.show_info_in_tooltip;
-                app.preferences.save();
-                tray_handler::refresh(app);
+                app.preferences.save()?;
+                tray_handler::refresh(app)?;
             }
             "last_fm_action" => {
-                last_fm::menu_click(app);
+                last_fm::menu_click(app)?;
                 last_fm::set_menu(app);
             }
-            _e => {} // println!("{:?}", e),
+            e => debug!("MenuEvent: {e:?}"),
         }
     }
+    Ok(())
 }
 
-fn exit(control_flow: &mut ControlFlow, app: &App) {
-    app.preferences.save();
+fn exit(control_flow: &mut ControlFlow, app: &App) -> Result<()> {
+    app.preferences.save()?;
     *control_flow = ControlFlow::Exit;
+    Ok(())
 }
