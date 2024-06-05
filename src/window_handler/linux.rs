@@ -16,9 +16,10 @@ impl WindowHandler {
     pub fn new(event_loop: &mut EventLoop<UserEvent>) -> WindowHandler {
         let (icon, icon_width, icon_height) = assets::get_image(assets::ICON);
         let window = WindowBuilder::new()
+            .with_title("Youtubby")
             .with_inner_size(WINDOW_SIZE)
             .with_min_inner_size(WINDOW_MIN_SIZE)
-            .with_decorations(false)
+            //.with_decorations(false)
             .with_visible_on_all_workspaces(true)
             .with_skip_taskbar(true)
             .with_visible(false)

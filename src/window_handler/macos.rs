@@ -18,6 +18,7 @@ impl WindowHandler {
 
         let (icon, icon_width, icon_height) = assets::get_image(assets::ICON);
         let window = WindowBuilder::new()
+            .with_title("Youtubby")
             .with_inner_size(WINDOW_SIZE)
             .with_min_inner_size(WINDOW_MIN_SIZE)
             .with_titlebar_transparent(true)
