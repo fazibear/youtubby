@@ -1,31 +1,28 @@
 use crate::app::App;
 use crate::player_state::{self, PlayerState};
 use crate::{assets, menu_handler::MenuHandler};
-use tray_icon::{Icon, TrayIcon, TrayIconBuilder, TrayIconEvent, TrayIconEventReceiver};
+use tray_icon::{Icon, TrayIcon, TrayIconBuilder};
 
 const MAX_PLAYER_INFO_STRING_LENGTH: usize = 46;
 
 pub struct TrayHandler {
     pub icon: TrayIcon,
-    pub channel: &'static TrayIconEventReceiver,
 }
 
 impl TrayHandler {
     pub fn new(menu_handler: &MenuHandler) -> TrayHandler {
         let (icon_data, icon_width, icon_height) = assets::get_image(assets::ICON);
         let icon_data = Icon::from_rgba(icon_data, icon_width, icon_height).unwrap();
-
         let icon = TrayIconBuilder::new()
             .with_id("0")
             .with_menu(Box::new(menu_handler.menu.clone()))
             .with_menu_on_left_click(false)
             .with_icon(icon_data)
+            .with_menu_on_left_click(true)
             .build()
             .unwrap();
 
-        let channel = TrayIconEvent::receiver();
-
-        Self { channel, icon }
+        Self { icon }
     }
 }
 

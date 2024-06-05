@@ -2,12 +2,11 @@ use std::collections::HashMap;
 
 use global_hotkey::{
     hotkey::{Code, HotKey},
-    GlobalHotKeyEvent, GlobalHotKeyEventReceiver, GlobalHotKeyManager,
+    GlobalHotKeyManager,
 };
 
 pub struct KeyHandler {
     pub manager: GlobalHotKeyManager,
-    pub channel: &'static GlobalHotKeyEventReceiver,
     pub keys: HashMap<u32, &'static str>,
 }
 
@@ -15,13 +14,8 @@ impl KeyHandler {
     pub fn new() -> KeyHandler {
         let keys = HashMap::new();
         let manager = GlobalHotKeyManager::new().unwrap();
-        let channel = GlobalHotKeyEvent::receiver();
 
-        KeyHandler {
-            manager,
-            channel,
-            keys,
-        }
+        KeyHandler { manager, keys }
     }
 
     pub fn register_keys(mut self) -> KeyHandler {
