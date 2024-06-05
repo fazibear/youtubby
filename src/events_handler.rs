@@ -26,6 +26,9 @@ pub fn callback(app: &mut App, event: &Event<UserEvent>, control_flow: &mut Cont
             event: WindowEvent::CloseRequested,
             ..
         } => exit(control_flow, app),
+        Event::MainEventsCleared => {
+            app.window_handler.window.request_redraw();
+        }
         _e => {} //println!("{:?}", e),
     };
 
