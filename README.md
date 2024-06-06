@@ -7,12 +7,12 @@
 [WIP] It's very early stage...
 
 Goals:
-- [ ] MacOS support
-- [ ] Windows support
-- [ ] Linux support
-- [ ] Notification support
-- [ ] Last.fm support
-- [ ] Adblocker?
-- [ ] MiniPlayer
-- [ ] Media Keys Support
-- [ ] AI (beacuse everything have it)
+- MacOS support
+- Windows support
+- Linux support
+- Notification support
+- Last.fm support
+- Adblock?
+- MiniPlayer
+- Media Keys Support
+- AI (beacuse everything have it ;)
