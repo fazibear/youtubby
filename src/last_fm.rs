@@ -142,6 +142,8 @@ pub fn menu_click(app: &mut App) -> Result<()> {
         State::Waiting(ref token) => {
             if let Ok((user, key)) = auth_get_session(token) {
                 app.preferences.last_fm = State::Connected((user.to_string(), key.to_string()));
+            } else {
+                app.preferences.last_fm = State::None;
             }
         }
         State::Connected(_) => {
@@ -248,7 +250,13 @@ fn post_json(url: Url) -> Result<Value> {
 
 fn query_json_value(json: &Value, path_str: &str) -> Result<String> {
     let path = JsonPath::parse(path_str)?;
-    let val = path.query(json).first().context("Empty value")?;
+    let val = path
+        .query(json)
+        .first()
+        .context("missing value for given path")?;
 
-    Ok(val.to_string())
+    Ok(val
+        .as_str()
+        .context("can't convert json value to string")?
+        .to_string())
 }
