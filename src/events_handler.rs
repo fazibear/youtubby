@@ -91,6 +91,7 @@ pub fn callback(
             "last_fm_action" => {
                 last_fm::menu_click(app)?;
                 last_fm::set_menu(app);
+                app.preferences.save()?;
             }
             e => debug!("MenuEvent: {e:?}"),
         }
