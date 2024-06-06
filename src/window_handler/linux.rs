@@ -29,7 +29,7 @@ impl WindowHandler {
             .build(event_loop)?;
 
         let builder = {
-            let vbox = window.default_vbox().context("no default vbox");
+            let vbox = window.default_vbox().context("no default vbox")?;
             WebViewBuilder::new_gtk(vbox)
         };
         let proxy = event_loop.create_proxy();
