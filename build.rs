@@ -11,12 +11,12 @@ fn main() {
 fn _build_macos_app() -> std::io::Result<()> {
     let root = env::var("CARGO_MANIFEST_DIR").unwrap();
     let build = env::var("PROFILE").unwrap();
-    let out_dir = Path::new(&root).join("target").join(&build);
+    let out_dir = Path::new(&root).join("target").join(build);
 
     let bin_name = "youtubby";
     let app_name = "Youtubby";
 
-    let app_dir = Path::new(&out_dir).join(&app_name).with_extension("app");
+    let app_dir = Path::new(&out_dir).join(app_name).with_extension("app");
 
     let contents_dir = Path::new(&app_dir).join("Contents");
     let macos_dir = Path::new(&app_dir).join("MacOS");
@@ -27,8 +27,8 @@ fn _build_macos_app() -> std::io::Result<()> {
     fs::create_dir_all(&macos_dir)?;
     fs::create_dir_all(&resources_dir)?;
 
-    let src_app_bin = Path::new(&out_dir).join(&bin_name);
-    let dst_app_bin = Path::new(&macos_dir).join(&bin_name);
+    let src_app_bin = Path::new(&out_dir).join(bin_name);
+    let dst_app_bin = Path::new(&macos_dir).join(bin_name);
     fs::copy(src_app_bin, dst_app_bin)?;
 
     let src_icon = Path::new(&root)
@@ -49,7 +49,7 @@ fn _build_macos_app() -> std::io::Result<()> {
         .with_extension("plist");
     fs::copy(src_icon, dst_icon)?;
 
-    println!("cargo:warning={}{:?}", "MacOS App: ", app_dir);
+    println!("cargo:warning=MacOS App: {app_dir:?}");
 
     Ok(())
 }
