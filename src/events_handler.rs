@@ -1,5 +1,4 @@
-use crate::app::App;
-use crate::window_handler::UserEvent;
+use crate::{app::App, window_handler::UserEvent};
 use crate::{last_fm, tray_handler};
 use anyhow::Result;
 use global_hotkey::{GlobalHotKeyEvent, HotKeyState};

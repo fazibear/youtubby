@@ -39,6 +39,8 @@ impl KeyHandler {
     fn register_key(&mut self, key: HotKey, js: &'static str) {
         if let Ok(()) = self.manager.register(key) {
             self.keys.insert(key.id, js);
+        } else {
+            log::info!("Can't register key!")
         }
     }
 }

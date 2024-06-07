@@ -1,11 +1,18 @@
-function PlayAll() {
-  var xpath = "//span[text()='Play all']";
-  document
+function PlaySomething() {
+  let xpath = "//span[text()='Play all']";
+  let play_all = document
     .evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null)
     .singleNodeValue
     .parentNode
     .parentNode
-    .click();
+
+  if(play_all) {
+    play_all.click()
+  } else {
+    let buttons = document.getElementsByClassName("ytmusic-play-button-renderer");
+    let rand = Math.floor(Math.random() * buttons.length);
+    buttons[rand].click();
+  }
 }
 
 function PlayPause() {// #top-player-bar
@@ -16,7 +23,7 @@ function PlayPauseClick() {
   if(document.getElementById('layout').getAttributeNames().includes('player-visible')){
     PlayPause();
   }else{
-    PlayAll();
+    PlaySomething();
   }
 }
 
