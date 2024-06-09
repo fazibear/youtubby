@@ -32,7 +32,6 @@ pub fn callback(
 
                 PlayerStateChanged::MetaDataUpdate(metadata) => {
                     app.player_state.metadata = metadata.clone();
-                    app.player_state.update_timestamp();
 
                     last_fm::track_update_now_playing(app)?;
                     last_fm::track_scrobble(app)?;

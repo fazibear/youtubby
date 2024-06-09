@@ -65,7 +65,7 @@ pub fn track_update_now_playing(app: &mut App) -> Result<()> {
 
 pub fn track_scrobble(app: &mut App) -> Result<()> {
     if let PlayerState {
-        timestamp: Some(timestamp),
+        timestamp,
         metadata:
         PlayerStateMetaData {
             track: Some(ref track),

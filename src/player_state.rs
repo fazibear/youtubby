@@ -11,7 +11,7 @@ pub struct PlayerStateMetaData {
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct PlayerState {
-    pub timestamp: Option<u64>,
+    pub timestamp: u64,
     pub position: Option<f32>,
     pub duration: Option<u32>,
     pub state: State,
@@ -28,8 +28,14 @@ pub enum State {
 
 impl PlayerState {
     pub fn new() -> PlayerState {
+        let start = SystemTime::now();
+        let timestamp = start
+            .duration_since(UNIX_EPOCH)
+            .expect("Time went backwards")
+            .as_secs();
+
         Self {
-            timestamp: None,
+            timestamp,
             position: None,
             duration: None,
             state: State::Stoped,
@@ -43,13 +49,5 @@ impl PlayerState {
 
     pub fn reset(&mut self) {
         *self = Self::new()
-    }
-
-    pub fn update_timestamp(&mut self) {
-        let start = SystemTime::now();
-        let timestamp = start
-            .duration_since(UNIX_EPOCH)
-            .expect("Time went backwards");
-        self.timestamp = Some(timestamp.as_secs())
     }
 }
