@@ -1,5 +1,5 @@
 use crate::app::App;
-use crate::player_state::{self, PlayerState};
+use crate::player_state::{self, PlayerState, PlayerStateMetaData};
 use crate::{assets, menu_handler::MenuHandler};
 use anyhow::Result;
 use tray_icon::{Icon, TrayIcon, TrayIconBuilder};
@@ -45,16 +45,16 @@ pub fn refresh(app: &mut App) -> Result<()> {
 
 pub fn player_info(state: &PlayerState) -> Option<String> {
     let icon = match state.state {
-        player_state::State::Playing(_) => "󰐊",
-        player_state::State::Paused(_) => "󰏤",
-        player_state::State::Stop => "󰓛",
+        player_state::State::Playing => "󰐊",
+        player_state::State::Paused | player_state::State::Waiting => "󰏤",
+        player_state::State::Stoped => "󰓛",
     };
 
-    if let PlayerState {
-        artist: Some(artist),
-        track: Some(track),
+    if let PlayerStateMetaData {
+        artist: Some(ref artist),
+        track: Some(ref track),
         ..
-    } = state
+    } = state.metadata
     {
         let mut info = format!("{icon} {artist} - {track}");
 

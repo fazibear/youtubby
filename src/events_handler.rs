@@ -1,5 +1,6 @@
-use crate::{app::App, window_handler::UserEvent};
-use crate::{last_fm, tray_handler};
+use crate::app::App;
+use crate::player_state_changed::PlayerStateChanged;
+use crate::{last_fm, player_state, tray_handler};
 use anyhow::Result;
 use global_hotkey::{GlobalHotKeyEvent, HotKeyState};
 use log::debug;
@@ -10,16 +11,35 @@ use tray_icon::{MouseButton, MouseButtonState, TrayIconEvent, TrayIconId};
 
 pub fn callback(
     app: &mut App,
-    event: &Event<UserEvent>,
+    event: &Event<PlayerStateChanged>,
     control_flow: &mut ControlFlow,
 ) -> Result<()> {
     *control_flow = ControlFlow::Poll;
 
     match event {
-        Event::UserEvent(UserEvent::PlayerStateUpdated(state)) => {
-            app.player_state.update(state);
-            last_fm::track_update_now_playing(app)?;
-            last_fm::track_scrobble(app)?;
+        Event::UserEvent(user_event) => {
+            log::info!("{:?}", user_event);
+
+            match user_event {
+                PlayerStateChanged::Play => app.player_state.state = player_state::State::Playing,
+                PlayerStateChanged::Stop => app.player_state.state = player_state::State::Stoped,
+                PlayerStateChanged::Pause => app.player_state.state = player_state::State::Paused,
+                PlayerStateChanged::Waiting => {
+                    app.player_state.state = player_state::State::Waiting
+                }
+
+                PlayerStateChanged::Emptied => app.player_state.reset(),
+
+                PlayerStateChanged::MetaDataUpdate(metadata) => {
+                    app.player_state.metadata = metadata.clone();
+                    app.player_state.update_timestamp();
+
+                    last_fm::track_update_now_playing(app)?;
+                    last_fm::track_scrobble(app)?;
+                }
+
+                e => log::info!("PlayerState: {e:?}"),
+            }
             tray_handler::refresh(app)?;
         }
         Event::WindowEvent {
@@ -69,7 +89,7 @@ pub fn callback(
             "playstop" => app
                 .window_handler
                 .webview
-                .evaluate_script("PlayPauseClick()")?,
+                .evaluate_script("Youtubby.playPauseClick()")?,
             "next" => app.window_handler.webview.evaluate_script("")?,
             "prev" => app.window_handler.webview.evaluate_script("")?,
             "quit" => exit(control_flow, app)?,

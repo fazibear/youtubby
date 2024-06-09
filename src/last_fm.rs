@@ -1,5 +1,5 @@
 use crate::app::App;
-use crate::player_state::{self, PlayerState};
+use crate::player_state::{PlayerState, PlayerStateMetaData};
 use anyhow::{Context, Result};
 use log::info;
 use serde::{Deserialize, Serialize};
@@ -22,13 +22,12 @@ pub enum State {
 }
 
 pub fn track_update_now_playing(app: &mut App) -> Result<()> {
-    if let PlayerState {
-        state: player_state::State::Playing(_),
+    if let PlayerStateMetaData {
         track: Some(ref track),
         artist: Some(ref artist),
         ref album,
         ..
-    } = app.player_state
+    } = app.player_state.metadata
     {
         if let State::Connected((_, ref sk)) = app.preferences.last_fm {
             let mut url = Url::parse(API_URL)?;
@@ -66,10 +65,13 @@ pub fn track_update_now_playing(app: &mut App) -> Result<()> {
 
 pub fn track_scrobble(app: &mut App) -> Result<()> {
     if let PlayerState {
-        state: player_state::State::Playing(timestamp),
-        track: Some(ref track),
-        artist: Some(ref artist),
-        ref album,
+        timestamp: Some(timestamp),
+        metadata:
+        PlayerStateMetaData {
+            track: Some(ref track),
+            artist: Some(ref artist),
+            ref album,
+        },
         ..
     } = app.player_state
     {
@@ -80,7 +82,7 @@ pub fn track_scrobble(app: &mut App) -> Result<()> {
                 .append_pair("method", "track.scrobble")
                 .append_pair("artist[0]", artist)
                 .append_pair("track[0]", track)
-                .append_pair("timestamp[0]", &timestamp.as_secs().to_string())
+                .append_pair("timestamp[0]", &timestamp.to_string())
                 .append_pair("sk", sk);
 
             if let Some(ref album) = album {

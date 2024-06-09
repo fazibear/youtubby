@@ -2,9 +2,9 @@ use anyhow::Result;
 
 pub const INIT_SCRIPT: &str =
 concat!(
-    "window.addEventListener('load', () => {document.head.insertAdjacentHTML('beforeend',`<style>",
+    "document.addEventListener('load', () => {document.head.insertAdjacentHTML('beforeend',`<style>",
     include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/assets/stylesheet.css")),
-    "</style>`);});",
+    "</style>`);});\n",
     include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/assets/scripts.js"))
 );
 

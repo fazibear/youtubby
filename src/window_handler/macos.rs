@@ -1,5 +1,6 @@
-use crate::window_handler::{UserEvent, URL, USER_AGENT, WINDOW_MIN_SIZE, WINDOW_SIZE};
-use crate::{assets, player_state::PlayerState};
+use crate::assets;
+use crate::player_state_changed::PlayerStateChanged;
+use crate::window_handler::{URL, USER_AGENT, WINDOW_MIN_SIZE, WINDOW_SIZE};
 use anyhow::Result;
 use tao::platform::macos::{EventLoopExtMacOS, WindowBuilderExtMacOS};
 use tao::{
@@ -14,7 +15,7 @@ pub struct WindowHandler {
 }
 
 impl WindowHandler {
-    pub fn init(event_loop: &mut EventLoop<UserEvent>) -> Result<WindowHandler> {
+    pub fn init(event_loop: &mut EventLoop<PlayerStateChanged>) -> Result<WindowHandler> {
         event_loop.set_activation_policy(tao::platform::macos::ActivationPolicy::Accessory);
 
         let (icon, icon_width, icon_height) = assets::get_image(assets::ICON)?;
@@ -36,9 +37,9 @@ impl WindowHandler {
         let proxy = event_loop.create_proxy();
 
         let ipc = move |req: Request<String>| {
-            let _ = proxy.send_event(UserEvent::PlayerStateUpdated(
-                PlayerState::from_json_string(req.body()).expect("failed parse player state"),
-            ));
+            if let Ok(event) = PlayerStateChanged::from_json_string(req.body()) {
+                let _ = proxy.send_event(event);
+            }
         };
 
         let webview = builder

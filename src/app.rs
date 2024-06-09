@@ -3,9 +3,10 @@ use crate::key_handler::KeyHandler;
 use crate::last_fm;
 use crate::menu_handler::MenuHandler;
 use crate::player_state::PlayerState;
+use crate::player_state_changed::PlayerStateChanged;
 use crate::preferences::Preferences;
 use crate::tray_handler::TrayHandler;
-use crate::window_handler::{UserEvent, WindowHandler};
+use crate::window_handler::WindowHandler;
 use anyhow::Result;
 use simple_logger::SimpleLogger;
 use std::collections::HashMap;
@@ -25,7 +26,7 @@ pub struct App {
 }
 
 impl App {
-    pub fn new(event_loop: &mut EventLoop<UserEvent>) -> Result<App> {
+    pub fn new(event_loop: &mut EventLoop<PlayerStateChanged>) -> Result<App> {
         Self::init_logger()?;
 
         let preferences = Preferences::load()?;
@@ -48,10 +49,12 @@ impl App {
 
         last_fm::set_menu(&mut app);
 
+        log::info!("Started");
+
         Ok(app)
     }
 
-    pub fn tick(&mut self, event: &Event<UserEvent>, control_flow: &mut ControlFlow) {
+    pub fn tick(&mut self, event: &Event<PlayerStateChanged>, control_flow: &mut ControlFlow) {
         events_handler::callback(self, event, control_flow).expect("tick");
     }
 

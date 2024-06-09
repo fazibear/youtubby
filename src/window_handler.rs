@@ -24,13 +24,6 @@ pub static URL: &str = "https://music.youtube.com";
 pub static WINDOW_SIZE: PhysicalSize<u32> = PhysicalSize::new(WINDOW_WIDTH, WINDOW_HEIGHT);
 pub static WINDOW_MIN_SIZE: LogicalSize<u32> = LogicalSize::new(320, 0);
 
-use crate::player_state::PlayerState;
-
-#[derive(Debug)]
-pub enum UserEvent {
-    PlayerStateUpdated(PlayerState),
-}
-
 impl WindowHandler {
     pub fn show_hide(&self, position: PhysicalPosition<f64>) {
         if self.window.is_visible() {

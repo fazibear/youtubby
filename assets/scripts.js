@@ -1,48 +1,83 @@
-function PlaySomething() {
-  let xpath = "//span[text()='Play all']";
-  let play_all = document
-    .evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null)
-    .singleNodeValue
-    .parentNode
-    .parentNode
+let Youtubby = function(){
+  let postMessage = function(msg) {
+    window.ipc.postMessage(JSON.stringify(msg));
+  };
 
-  if(play_all) {
-    play_all.click()
-  } else {
-    let buttons = document.getElementsByClassName("ytmusic-play-button-renderer");
-    let rand = Math.floor(Math.random() * buttons.length);
-    buttons[rand].click();
+  let metadata = function() {
+    meta = navigator.mediaSession.metadata
+    data = {}
+    for( key in meta) {
+      data[key] = meta[key]
+    }
+    return data
   }
-}
 
-function PlayPause() {// #top-player-bar
-  document.getElementById('play-pause-button').click();
-}
+  let init = function() {
+    var video = document.querySelector("video");
+    if (!video){
+      return setTimeout(init, 250);
+    };
+    Object.entries({
+      "pause": (event) => postMessage({type: event.type}),
+      "play": (event) =>  postMessage({type: event.type}),
+      "seeked": (event) => postMessage({type: event.type, time: event.target.currentTime, duration: event.target.duration}),
+      "durationupdate": (event) => postMessage({type: event.type, duration: event.target.duration}),
+      "timeupdate": (event) => postMessage({type: event.type, time: event.target.currentTime }),
+      "waiting": (event) => postMessage({type: event.type}),
+      "emptied": (event) => postMessage({type: event.type})
+    }).forEach(([event, callback]) => {
+        video.addEventListener(event, callback)
+      })
 
-function PlayPauseClick() {
-  if(document.getElementById('layout').getAttributeNames().includes('player-visible')){
-    PlayPause();
-  }else{
-    PlaySomething();
+    const originalFetch = window.fetch;
+    window.fetch = async (request, config) => {
+      const response = await originalFetch(request, config);
+      if(response.url.match(/next/) && response.ok === true) {
+        setTimeout(function() {
+          postMessage(
+            {type: "metadataupdate", metadata: metadata()}
+          );
+        }, 500);
+      }
+      return response;
+    };
+  };
+
+  window.addEventListener("load", init);
+
+  let playSomething = () => {
+    let xpath = "//span[text()='Play all']";
+    let play_all = document
+      .evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null)
+      .singleNodeValue
+      .parentNode
+      .parentNode
+
+    if(play_all) {
+      play_all.click()
+    } else {
+      let buttons = document.getElementsByClassName("ytmusic-play-button-renderer");
+      let rand = Math.floor(Math.random() * buttons.length);
+      buttons[rand].click();
+    }
   }
-}
 
-function Checker(){
-  let metadata = navigator.mediaSession.metadata;
-  if(!metadata){ return }
-  meta = JSON.stringify({
-    artist: metadata.artist,
-    title: metadata.title,
-    album: metadata.album,
-    state: navigator.mediaSession.playbackState
-  })
-  if(meta !== navigator.oldmeta) {
-    navigator.oldmeta = meta;
-    window.ipc.postMessage(meta);
+  let playPause = () => {// #top-player-bar
+    document.getElementById('play-pause-button').click();
   }
-}
 
-setInterval(Checker, 250);
+  let playPauseClick = () => {
+    if(document.getElementById('layout').getAttributeNames().includes('player-visible')){
+      playPause();
+    }else{
+      playSomething();
+    }
+  }
+
+  return {
+    playPauseClick: playPauseClick
+  }
+}();
 
 // function FixBottomPlayer(event) {
 //   if((event.target.innerWidth || window.innerWidth) < 640) {
