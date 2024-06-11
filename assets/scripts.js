@@ -12,11 +12,7 @@ let Youtubby = function(){
     return data
   }
 
-  let init = function() {
-    var video = document.querySelector("video");
-    if (!video){
-      return setTimeout(init, 250);
-    };
+  let attachVideoEvents = function(video) {
     Object.entries({
       "pause": (event) => postMessage({type: event.type}),
       "play": (event) =>  postMessage({type: event.type}),
@@ -24,11 +20,19 @@ let Youtubby = function(){
       "durationupdate": (event) => postMessage({type: event.type, duration: event.target.duration}),
       "timeupdate": (event) => postMessage({type: event.type, time: event.target.currentTime }),
       "waiting": (event) => postMessage({type: event.type}),
-      "emptied": (event) => postMessage({type: event.type})
-    }).forEach(([event, callback]) => {
-        video.addEventListener(event, callback)
-      })
+      "emptied": (event) => {
+        postMessage({type: event.type})
+      },
+      // just testing
+      "complete": (event) => postMessage({type: event.type}),
+      "error": (event) => postMessage({type: event.type}),
+      "ended": (event) => postMessage({type: event.type}),
+      "stalled": (event) => postMessage({type: event.type}),
+      "suspend": (event) => postMessage({type: event.type})
+    }).forEach(([event, callback]) => video.addEventListener(event, callback));
+  }
 
+  let attachMetaDataUpdate = function() {
     const originalFetch = window.fetch;
     window.fetch = async (request, config) => {
       const response = await originalFetch(request, config);
@@ -37,10 +41,27 @@ let Youtubby = function(){
           postMessage(
             {type: "metadataupdate", metadata: metadata()}
           );
-        }, 500);
+        }, 100);
       }
       return response;
     };
+  }
+
+  var findAndAttachVideoEvents = function() {
+    video = document.querySelector("video");
+    if (!video){
+      return setTimeout(init, 250);
+    }else{
+      attachVideoEvents(video);
+      video.parentNode.addEventListener('DOMNodeInserted', function(e) {
+        attachVideoEvents(e.relatedNode.childNodes[0])
+      });
+    };
+  }
+
+  let init = function() {
+    findAndAttachVideoEvents();
+    attachMetaDataUpdate();
   };
 
   window.addEventListener("load", init);

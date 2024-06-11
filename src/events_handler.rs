@@ -24,10 +24,6 @@ pub fn callback(
                 PlayerStateChanged::Play => app.player_state.state = player_state::State::Playing,
                 PlayerStateChanged::Stop => app.player_state.state = player_state::State::Stoped,
                 PlayerStateChanged::Pause => app.player_state.state = player_state::State::Paused,
-                PlayerStateChanged::Waiting => {
-                    app.player_state.state = player_state::State::Waiting
-                }
-
                 PlayerStateChanged::Emptied => app.player_state.reset(),
 
                 PlayerStateChanged::MetaDataUpdate(metadata) => {
@@ -37,7 +33,7 @@ pub fn callback(
                     last_fm::track_scrobble(app)?;
                 }
 
-                e => log::info!("PlayerState: {e:?}"),
+                e => log::debug!("PlayerState: {e:?}"),
             }
             tray_handler::refresh(app)?;
         }
