@@ -23,7 +23,6 @@ pub enum State {
     Playing,
     Paused,
     Stoped,
-    Waiting,
 }
 
 impl PlayerState {
