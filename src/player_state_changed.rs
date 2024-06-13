@@ -5,13 +5,13 @@ use std::collections::HashMap;
 
 #[derive(Debug)]
 pub enum PlayerStateChanged {
-    Play,
+    Play(PlayerStateMetaData),
     Stop,
     Pause,
     Seeked,
     Emptied,
     TimeUpdate(f64),
-    DurationUpdate(i64),
+    DurationChange(i64),
     Waiting,
     MetaDataUpdate(PlayerStateMetaData),
 }
@@ -21,18 +21,28 @@ impl PlayerStateChanged {
         let meta: HashMap<&str, Value> = serde_json::from_str(json)?;
 
         match meta.get("type").context("need type field")? {
-            Value::String(t) if t == "play" => Ok(Self::Play),
             Value::String(t) if t == "stop" => Ok(Self::Stop),
             Value::String(t) if t == "pause" => Ok(Self::Pause),
             Value::String(t) if t == "seeked" => Ok(Self::Seeked),
             Value::String(t) if t == "waiting" => Ok(Self::Waiting),
             Value::String(t) if t == "emptied" => Ok(Self::Emptied),
 
-            Value::String(t) if t == "durationupdate" => {
+            Value::String(t) if t == "play" => {
+                if let Some(Value::Object(metadata)) = meta.get("metadata") {
+                    return Ok(Self::Play(PlayerStateMetaData {
+                        artist: Self::to_option_string(metadata.get("artist")),
+                        track: Self::to_option_string(metadata.get("title")),
+                        album: Self::to_option_string(metadata.get("album")),
+                    }));
+                }
+                Err(Error::msg("can't parse metadata"))
+            }
+
+            Value::String(t) if t == "durationchange" => {
                 if let Some(Value::Number(duration)) = meta.get("duration") {
                     log::info!("{}", duration);
                     if let Some(duration_as_int) = duration.as_i64() {
-                        return Ok(Self::DurationUpdate(duration_as_int));
+                        return Ok(Self::DurationChange(duration_as_int));
                     }
                 }
                 Err(Error::msg("can't parse duration"))
