@@ -15,10 +15,10 @@ let Youtubby = function(){
   let attachVideoEvents = function(video) {
     Object.entries({
       "pause": (event) => postMessage({type: event.type}),
-      "play": (event) =>  postMessage({type: event.type}),
-      "seeked": (event) => postMessage({type: event.type, time: event.target.currentTime, duration: event.target.duration}),
-      "durationupdate": (event) => postMessage({type: event.type, duration: event.target.duration}),
-      "timeupdate": (event) => postMessage({type: event.type, time: event.target.currentTime }),
+      "play": (event) =>  postMessage({type: event.type, metadata: metadata()}),
+      "seeked": (event) => postMessage({type: event.type}),
+      "durationchange": (event) => postMessage({type: event.type, duration: event.target.duration}),
+      "timeupdate": (event) => postMessage({type: event.type, time: event.target.currentTime}),
       "waiting": (event) => postMessage({type: event.type}),
       "emptied": (event) => {
         postMessage({type: event.type})

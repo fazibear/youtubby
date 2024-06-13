@@ -21,18 +21,32 @@ pub fn callback(
             log::info!("{:?}", user_event);
 
             match user_event {
-                PlayerStateChanged::Play => app.player_state.state = player_state::State::Playing,
                 PlayerStateChanged::Stop => app.player_state.state = player_state::State::Stoped,
                 PlayerStateChanged::Pause => app.player_state.state = player_state::State::Paused,
                 PlayerStateChanged::Emptied => app.player_state.reset(),
+                PlayerStateChanged::Play(metadata) => {
+                    app.player_state.metadata = metadata.clone();
+                    app.player_state.state = player_state::State::Playing;
+                    last_fm::track_update_now_playing(app)?;
+                }
 
                 PlayerStateChanged::MetaDataUpdate(metadata) => {
                     app.player_state.metadata = metadata.clone();
-
-                    last_fm::track_update_now_playing(app)?;
-                    last_fm::track_scrobble(app)?;
                 }
+                PlayerStateChanged::TimeUpdate(time) => {
+                    app.player_state.position = Some(*time);
 
+                    if let (Some(duration), Some(position)) =
+                        (app.player_state.duration, app.player_state.position)
+                    {
+                        if duration / 2 == position as i64 {
+                            last_fm::track_scrobble(app)?;
+                        }
+                    }
+                }
+                PlayerStateChanged::DurationChange(duration) => {
+                    app.player_state.duration = Some(*duration);
+                }
                 e => log::debug!("PlayerState: {e:?}"),
             }
             tray_handler::refresh(app)?;

@@ -12,8 +12,8 @@ pub struct PlayerStateMetaData {
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct PlayerState {
     pub timestamp: u64,
-    pub position: Option<f32>,
-    pub duration: Option<u32>,
+    pub position: Option<f64>,
+    pub duration: Option<i64>,
     pub state: State,
     pub metadata: PlayerStateMetaData,
 }
