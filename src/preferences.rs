@@ -12,6 +12,7 @@ pub struct Preferences {
     pub show_info_in_tray: bool,
     pub show_info_in_tooltip: bool,
     pub hide_unfocused_window: bool,
+    pub always_on_top: bool,
     pub last_fm: last_fm::State,
 }
 
@@ -21,6 +22,7 @@ impl Preferences {
             show_info_in_tray: true,
             show_info_in_tooltip: true,
             hide_unfocused_window: true,
+            always_on_top: true,
             last_fm: last_fm::State::None,
         }
     }

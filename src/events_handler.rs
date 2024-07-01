@@ -1,6 +1,6 @@
 use crate::app::App;
 use crate::player_state_changed::PlayerStateChanged;
-use crate::{last_fm, player_state, tray_handler};
+use crate::{last_fm, player_state, tray_handler, window_handler};
 use anyhow::Result;
 use global_hotkey::{GlobalHotKeyEvent, HotKeyState};
 use log::debug;
@@ -18,14 +18,13 @@ pub fn callback(
 
     match event {
         Event::UserEvent(user_event) => {
-            log::info!("{:?}", user_event);
+            log::debug!("UserEvent: {:?}", user_event);
 
             match user_event {
                 PlayerStateChanged::Stop => app.player_state.state = player_state::State::Stoped,
                 PlayerStateChanged::Pause => app.player_state.state = player_state::State::Paused,
                 PlayerStateChanged::Emptied => app.player_state.reset(),
-                PlayerStateChanged::Play(metadata) => {
-                    app.player_state.metadata = metadata.clone();
+                PlayerStateChanged::Play => {
                     app.player_state.state = player_state::State::Playing;
                     last_fm::track_update_now_playing(app)?;
                 }
@@ -39,7 +38,7 @@ pub fn callback(
                     if let (Some(duration), Some(position)) =
                         (app.player_state.duration, app.player_state.position)
                     {
-                        if duration / 2 == position as i64 {
+                        if (duration / 2) == position {
                             last_fm::track_scrobble(app)?;
                         }
                     }
@@ -47,7 +46,7 @@ pub fn callback(
                 PlayerStateChanged::DurationChange(duration) => {
                     app.player_state.duration = Some(*duration);
                 }
-                e => log::debug!("PlayerState: {e:?}"),
+                e => log::debug!("Unhandled PlayerState Event: {e:?}"),
             }
             tray_handler::refresh(app)?;
         }
@@ -102,10 +101,14 @@ pub fn callback(
             "next" => app.window_handler.webview.evaluate_script("")?,
             "prev" => app.window_handler.webview.evaluate_script("")?,
             "quit" => exit(control_flow, app)?,
+            "always_on_top" => {
+                app.preferences.always_on_top = !app.preferences.always_on_top;
+                app.preferences.save()?;
+                window_handler::refresh(app)?;
+            }
             "hide_unfocused_window" => {
                 app.preferences.hide_unfocused_window = !app.preferences.hide_unfocused_window;
                 app.preferences.save()?;
-                tray_handler::refresh(app)?;
             }
             "show_info_in_tray" => {
                 app.preferences.show_info_in_tray = !app.preferences.show_info_in_tray;

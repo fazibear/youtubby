@@ -5,13 +5,13 @@ use std::collections::HashMap;
 
 #[derive(Debug)]
 pub enum PlayerStateChanged {
-    Play(PlayerStateMetaData),
+    Play,
     Stop,
     Pause,
     Seeked,
     Emptied,
-    TimeUpdate(f64),
-    DurationChange(i64),
+    TimeUpdate(u64),
+    DurationChange(u64),
     Waiting,
     MetaDataUpdate(PlayerStateMetaData),
 }
@@ -26,22 +26,10 @@ impl PlayerStateChanged {
             Value::String(t) if t == "seeked" => Ok(Self::Seeked),
             Value::String(t) if t == "waiting" => Ok(Self::Waiting),
             Value::String(t) if t == "emptied" => Ok(Self::Emptied),
-
-            Value::String(t) if t == "play" => {
-                if let Some(Value::Object(metadata)) = meta.get("metadata") {
-                    return Ok(Self::Play(PlayerStateMetaData {
-                        artist: Self::to_option_string(metadata.get("artist")),
-                        track: Self::to_option_string(metadata.get("title")),
-                        album: Self::to_option_string(metadata.get("album")),
-                    }));
-                }
-                Err(Error::msg("can't parse metadata"))
-            }
-
+            Value::String(t) if t == "play" => Ok(Self::Play),
             Value::String(t) if t == "durationchange" => {
                 if let Some(Value::Number(duration)) = meta.get("duration") {
-                    log::info!("{}", duration);
-                    if let Some(duration_as_int) = duration.as_i64() {
+                    if let Some(duration_as_int) = duration.as_u64() {
                         return Ok(Self::DurationChange(duration_as_int));
                     }
                 }
@@ -49,13 +37,21 @@ impl PlayerStateChanged {
             }
             Value::String(t) if t == "timeupdate" => {
                 if let Some(Value::Number(time)) = meta.get("time") {
-                    if let Some(time_as_float) = time.as_f64() {
-                        return Ok(Self::TimeUpdate(time_as_float));
+                    if let Some(time_as_int) = time.as_u64() {
+                        return Ok(Self::TimeUpdate(time_as_int));
                     }
                 }
                 Err(Error::msg("can't parse time"))
             }
 
+            //Value::String(t) if t == "loadedmetadata" => {
+            //    if let Some(Value::Number(duration)) = meta.get("duration") {
+            //        if let Some(duration_as_int) = duration.as_i64() {
+            //            return Ok(Self::DurationUpdate(duration_as_int));
+            //        }
+            //    }
+            //    Err(Error::msg("can't parse metadata"))
+            //}
             Value::String(t) if t == "metadataupdate" => {
                 if let Some(Value::Object(metadata)) = meta.get("metadata") {
                     return Ok(Self::MetaDataUpdate(PlayerStateMetaData {
@@ -67,7 +63,10 @@ impl PlayerStateChanged {
                 Err(Error::msg("can't parse metadata"))
             }
 
-            _ => Err(Error::msg(format!("unknown event: {json}"))),
+            e => {
+                log::warn!("Missing event {:?}", e);
+                Err(Error::msg(format!("unknown event: {json}")))
+            }
         }
     }
 
