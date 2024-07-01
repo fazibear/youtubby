@@ -1,7 +1,6 @@
 use crate::app::App;
 use crate::player_state::{PlayerState, PlayerStateMetaData};
 use anyhow::{Context, Result};
-use log::info;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use serde_json_path::JsonPath;
@@ -57,7 +56,9 @@ pub fn track_update_now_playing(app: &mut App) -> Result<()> {
                 .append_pair("api_sig", &sig)
                 .append_pair("format", "json");
 
-            post_json(url)?;
+            if let Err(e) = post_json(url) {
+                log::error!("Failed to update now playing: {:?}", e.to_string());
+            }
         }
     }
     Ok(())
@@ -67,11 +68,11 @@ pub fn track_scrobble(app: &mut App) -> Result<()> {
     if let PlayerState {
         timestamp,
         metadata:
-        PlayerStateMetaData {
-            track: Some(ref track),
-            artist: Some(ref artist),
-            ref album,
-        },
+            PlayerStateMetaData {
+                track: Some(ref track),
+                artist: Some(ref artist),
+                ref album,
+            },
         ..
     } = app.player_state
     {
@@ -218,12 +219,12 @@ fn generate_signature(url: &mut Url) -> String {
 fn get_json(url: Url) -> Result<Value> {
     let client = reqwest::blocking::Client::new();
 
-    info!("LastFM get url: {url}");
+    log::info!("LastFM get url: {url}");
 
     let response = client.get(url).send()?.text()?;
     let json = serde_json::from_str(&response)?;
 
-    info!("LastFM get response {json}");
+    log::info!("LastFM get response {json}");
 
     Ok(json)
 }
@@ -239,13 +240,13 @@ fn post_json(url: Url) -> Result<Value> {
     let client = reqwest::blocking::Client::new();
     let encoded = UrlEncodedData::from(query).to_string();
 
-    info!("LastFM post request {query}");
+    log::info!("LastFM post request {query}");
 
     let res = client.post(host_path).body(encoded).send()?;
     let text = res.text()?;
     let json = serde_json::from_str(&text)?;
 
-    info!("LastFM post response {json}");
+    log::info!("LastFM post response {json}");
 
     Ok(json)
 }

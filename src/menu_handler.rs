@@ -16,6 +16,13 @@ impl MenuHandler {
         let prefs = Submenu::new("Preferences", true);
         prefs.append_items(&[
             &CheckMenuItem::with_id(
+                "always_on_top",
+                "Always on top",
+                true,
+                preferences.always_on_top,
+                None,
+            ),
+            &CheckMenuItem::with_id(
                 "hide_unfocused_window",
                 "Hide unfocused window",
                 true,

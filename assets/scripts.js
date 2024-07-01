@@ -15,20 +15,17 @@ let Youtubby = function(){
   let attachVideoEvents = function(video) {
     Object.entries({
       "pause": (event) => postMessage({type: event.type}),
-      "play": (event) =>  postMessage({type: event.type, metadata: metadata()}),
+      "play": (event) =>  postMessage({type: event.type}),
       "seeked": (event) => postMessage({type: event.type}),
-      "durationchange": (event) => postMessage({type: event.type, duration: event.target.duration}),
-      "timeupdate": (event) => postMessage({type: event.type, time: event.target.currentTime}),
-      "waiting": (event) => postMessage({type: event.type}),
+      "durationchange": (event) => postMessage({type: event.type, duration: document.getElementById('progress-bar').max}),
+      "timeupdate": (event) => postMessage({type: event.type, time: document.getElementById('progress-bar').value}),
       "emptied": (event) => {
         postMessage({type: event.type})
       },
-      // just testing
-      "complete": (event) => postMessage({type: event.type}),
+      //"complete": (event) => postMessage({type: event.type}),
       "error": (event) => postMessage({type: event.type}),
-      "ended": (event) => postMessage({type: event.type}),
-      "stalled": (event) => postMessage({type: event.type}),
-      "suspend": (event) => postMessage({type: event.type})
+      //"ended": (event) => postMessage({type: event.type}),
+      //"loadedmetadata": (event) => postMessage({type: event.type, duration: progressBar.ariaValueMax})
     }).forEach(([event, callback]) => video.addEventListener(event, callback));
   }
 

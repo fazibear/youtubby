@@ -1,19 +1,23 @@
-#[cfg(target_os = "macos")]
-#[path = "window_handler/macos.rs"]
-mod macos;
-#[cfg(target_os = "macos")]
-pub use macos::WindowHandler;
-#[cfg(target_os = "linux")]
-#[path = "window_handler/linux.rs"]
-mod linux;
-#[cfg(target_os = "linux")]
-pub use linux::WindowHandler;
 #[cfg(target_os = "windows")]
 #[path = "window_handler/windows.rs"]
 mod windows;
 #[cfg(target_os = "windows")]
 pub use windows::WindowHandler;
 
+#[cfg(target_os = "linux")]
+#[path = "window_handler/linux.rs"]
+mod linux;
+#[cfg(target_os = "linux")]
+pub use linux::WindowHandler;
+
+#[cfg(target_os = "macos")]
+#[path = "window_handler/macos.rs"]
+mod macos;
+#[cfg(target_os = "macos")]
+pub use macos::WindowHandler;
+
+use crate::app::App;
+use anyhow::Result;
 use tao::dpi::{LogicalSize, PhysicalPosition, PhysicalSize};
 
 pub static WINDOW_WIDTH: u32 = 896;
@@ -51,4 +55,11 @@ impl WindowHandler {
         self.window.set_visible_on_all_workspaces(true);
         self.window.set_focus();
     }
+}
+
+pub fn refresh(app: &mut App) -> Result<()> {
+    app.window_handler
+        .window
+        .set_always_on_top(app.preferences.always_on_top);
+    Ok(())
 }

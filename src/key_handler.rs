@@ -40,7 +40,7 @@ impl KeyHandler {
         if let Ok(()) = self.manager.register(key) {
             self.keys.insert(key.id, js);
         } else {
-            log::info!("Can't register key!")
+            log::error!("Can't register key!")
         }
     }
 }
