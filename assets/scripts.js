@@ -25,7 +25,7 @@ let Youtubby = function(){
       //"complete": (event) => postMessage({type: event.type}),
       "error": (event) => postMessage({type: event.type}),
       //"ended": (event) => postMessage({type: event.type}),
-      //"loadedmetadata": (event) => postMessage({type: event.type, duration: progressBar.ariaValueMax})
+      "loadedmetadata": (event) => postMessage({type: event.type, metadata: metadata()})
     }).forEach(([event, callback]) => video.addEventListener(event, callback));
   }
 

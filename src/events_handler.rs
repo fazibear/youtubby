@@ -21,34 +21,40 @@ pub fn callback(
             log::debug!("UserEvent: {:?}", user_event);
 
             match user_event {
-                PlayerStateChanged::Stop => app.player_state.state = player_state::State::Stoped,
-                PlayerStateChanged::Pause => app.player_state.state = player_state::State::Paused,
-                PlayerStateChanged::Emptied => app.player_state.reset(),
+                PlayerStateChanged::Stop => {
+                    app.player_state.state = player_state::State::Stoped;
+                    tray_handler::refresh(app)?;
+                }
+                PlayerStateChanged::Pause => {
+                    app.player_state.state = player_state::State::Paused;
+                    tray_handler::refresh(app)?;
+                }
+                PlayerStateChanged::Emptied => {
+                    app.player_state.reset();
+                    tray_handler::refresh(app)?;
+                }
                 PlayerStateChanged::Play => {
                     app.player_state.state = player_state::State::Playing;
-                    last_fm::track_update_now_playing(app)?;
+                    tray_handler::refresh(app)?;
                 }
-
+                PlayerStateChanged::LoadMetaData(metadata) => {
+                    app.player_state.metadata = metadata.clone();
+                    last_fm::track_update_now_playing(app)?;
+                    tray_handler::refresh(app)?;
+                }
                 PlayerStateChanged::MetaDataUpdate(metadata) => {
                     app.player_state.metadata = metadata.clone();
+                    tray_handler::refresh(app)?;
                 }
                 PlayerStateChanged::TimeUpdate(time) => {
                     app.player_state.position = Some(*time);
-
-                    if let (Some(duration), Some(position)) =
-                        (app.player_state.duration, app.player_state.position)
-                    {
-                        if (duration / 2) == position {
-                            last_fm::track_scrobble(app)?;
-                        }
-                    }
+                    last_fm::track_scrobble_at_half(app)?;
                 }
                 PlayerStateChanged::DurationChange(duration) => {
                     app.player_state.duration = Some(*duration);
                 }
                 e => log::debug!("Unhandled PlayerState Event: {e:?}"),
             }
-            tray_handler::refresh(app)?;
         }
         Event::WindowEvent {
             event: WindowEvent::Focused(false),
