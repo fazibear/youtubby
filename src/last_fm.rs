@@ -64,6 +64,15 @@ pub fn track_update_now_playing(app: &mut App) -> Result<()> {
     Ok(())
 }
 
+pub fn track_scrobble_at_half(app: &mut App) -> Result<()> {
+    if let (Some(duration), Some(position)) = (app.player_state.duration, app.player_state.position) {
+        if (duration / 2) == position {
+            let _ = track_scrobble(app);
+        }
+    };
+    Ok(())
+}
+
 pub fn track_scrobble(app: &mut App) -> Result<()> {
     if let PlayerState {
         timestamp,

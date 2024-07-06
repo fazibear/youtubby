@@ -13,6 +13,7 @@ pub enum PlayerStateChanged {
     TimeUpdate(u64),
     DurationChange(u64),
     Waiting,
+    LoadMetaData(PlayerStateMetaData),
     MetaDataUpdate(PlayerStateMetaData),
 }
 
@@ -43,15 +44,16 @@ impl PlayerStateChanged {
                 }
                 Err(Error::msg("can't parse time"))
             }
-
-            //Value::String(t) if t == "loadedmetadata" => {
-            //    if let Some(Value::Number(duration)) = meta.get("duration") {
-            //        if let Some(duration_as_int) = duration.as_i64() {
-            //            return Ok(Self::DurationUpdate(duration_as_int));
-            //        }
-            //    }
-            //    Err(Error::msg("can't parse metadata"))
-            //}
+            Value::String(t) if t == "loadedmetadata" => {
+                if let Some(Value::Object(metadata)) = meta.get("metadata") {
+                    return Ok(Self::LoadMetaData(PlayerStateMetaData {
+                        artist: Self::to_option_string(metadata.get("artist")),
+                        track: Self::to_option_string(metadata.get("title")),
+                        album: Self::to_option_string(metadata.get("album")),
+                    }));
+                }
+                Err(Error::msg("can't parse metadata"))
+            }
             Value::String(t) if t == "metadataupdate" => {
                 if let Some(Value::Object(metadata)) = meta.get("metadata") {
                     return Ok(Self::MetaDataUpdate(PlayerStateMetaData {
