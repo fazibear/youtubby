@@ -56,15 +56,22 @@ pub fn player_info(state: &PlayerState) -> Option<String> {
         ..
     } = state.metadata
     {
-        let mut info = format!("{icon} {artist} - {track}");
+        let info = format!("{icon} {artist} - {track}");
 
-        if info.len() > MAX_PLAYER_INFO_STRING_LENGTH {
-            info.truncate(MAX_PLAYER_INFO_STRING_LENGTH);
-            info.push_str("...");
+        if info.chars().count() > MAX_PLAYER_INFO_STRING_LENGTH {
+            let short = truncate(&info, MAX_PLAYER_INFO_STRING_LENGTH);
+            Some(format!("{short}..."))
+        } else {
+            Some(info)
         }
-
-        Some(info)
     } else {
         None
+    }
+}
+
+fn truncate(s: &String, max_chars: usize) -> &str {
+    match s.char_indices().nth(max_chars) {
+        None => s,
+        Some((idx, _)) => &s[..idx],
     }
 }
