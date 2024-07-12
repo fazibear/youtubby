@@ -1,9 +1,9 @@
-use super::{
+use crate::youtubby::{
     assets,
     player_state_changed::PlayerStateChanged,
     window_handler::{URL, USER_AGENT, WINDOW_MIN_SIZE, WINDOW_SIZE},
 };
-use anyhow::{Context, Result};
+use anyhow::Result;
 use tao::platform::unix::{WindowBuilderExtUnix, WindowExtUnix};
 use tao::{
     event_loop::EventLoop,
