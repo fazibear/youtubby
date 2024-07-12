@@ -51,12 +51,12 @@ impl WindowHandler {
 
     pub fn show(&self) {
         self.window.set_visible(true);
-        // ALL WORKSPACES
-        self.window.sticky();
+        //todo!("show on all workspaces")
         self.window.focus_window();
     }
 }
 
 pub fn refresh(_app: &mut Youtubby) -> Result<()> {
-    todo!("Always on top")
+    //todo!("Always on top")
+    Ok(())
 }
