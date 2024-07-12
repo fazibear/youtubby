@@ -1,21 +1,32 @@
-use crate::events_handler;
-use crate::key_handler::KeyHandler;
-use crate::last_fm;
-use crate::menu_handler::MenuHandler;
-use crate::player_state::PlayerState;
-use crate::player_state_changed::PlayerStateChanged;
-use crate::preferences::Preferences;
-use crate::tray_handler::TrayHandler;
-use crate::window_handler::WindowHandler;
+mod assets;
+mod events_handler;
+mod key_handler;
+mod last_fm;
+mod menu_handler;
+mod player_state;
+mod player_state_changed;
+mod preferences;
+mod tray_handler;
+mod window_handler;
+
 use anyhow::Result;
+use key_handler::KeyHandler;
+use menu_handler::MenuHandler;
+use player_state::PlayerState;
+use player_state_changed::PlayerStateChanged;
+use preferences::Preferences;
 use simple_logger::SimpleLogger;
 use std::collections::HashMap;
+use tao::{
+    event::Event,
+    event_loop::{ControlFlow, EventLoop, EventLoopBuilder},
+};
+use tray_handler::TrayHandler;
+use window_handler::WindowHandler;
 
-use tao::event::Event;
-use tao::event_loop::ControlFlow;
-use tao::event_loop::EventLoop;
+type YoutubbyEventLoop = EventLoop<PlayerStateChanged>;
 
-pub struct App {
+pub struct Youtubby {
     pub preferences: Preferences,
     pub window_handler: WindowHandler,
     pub key_handler: KeyHandler,
@@ -25,8 +36,12 @@ pub struct App {
     pub cache: HashMap<String, String>,
 }
 
-impl App {
-    pub fn new(event_loop: &mut EventLoop<PlayerStateChanged>) -> Result<App> {
+impl Youtubby {
+    pub fn build_event_loop() -> YoutubbyEventLoop {
+        EventLoopBuilder::<PlayerStateChanged>::with_user_event().build()
+    }
+
+    pub fn new(event_loop: &mut YoutubbyEventLoop) -> Result<Self> {
         Self::init_logger()?;
 
         let preferences = Preferences::load()?;

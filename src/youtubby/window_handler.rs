@@ -16,7 +16,7 @@ mod macos;
 #[cfg(target_os = "macos")]
 pub use macos::WindowHandler;
 
-use crate::app::App;
+use super::Youtubby;
 use anyhow::Result;
 use tao::dpi::{LogicalSize, PhysicalPosition, PhysicalSize};
 
@@ -57,7 +57,7 @@ impl WindowHandler {
     }
 }
 
-pub fn refresh(app: &mut App) -> Result<()> {
+pub fn refresh(app: &mut Youtubby) -> Result<()> {
     app.window_handler
         .window
         .set_always_on_top(app.preferences.always_on_top);

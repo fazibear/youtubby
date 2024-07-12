@@ -1,20 +1,23 @@
-use crate::app::App;
-use crate::player_state_changed::PlayerStateChanged;
-use crate::{last_fm, player_state, tray_handler, window_handler};
+use super::{
+    last_fm, player_state, player_state_changed::PlayerStateChanged, tray_handler, window_handler,
+    Youtubby,
+};
 use anyhow::Result;
 use global_hotkey::{GlobalHotKeyEvent, HotKeyState};
 use log::debug;
 use muda::MenuEvent;
-use tao::event::{Event, WindowEvent};
-use tao::event_loop::ControlFlow;
+use tao::{
+    event::{Event, WindowEvent},
+    event_loop::ControlFlow,
+};
 use tray_icon::{MouseButton, MouseButtonState, TrayIconEvent, TrayIconId};
 
 pub fn callback(
-    app: &mut App,
+    app: &mut Youtubby,
     event: &Event<PlayerStateChanged>,
     control_flow: &mut ControlFlow,
 ) -> Result<()> {
-    *control_flow = ControlFlow::Poll;
+    *control_flow = ControlFlow::Wait;
 
     match event {
         Event::UserEvent(user_event) => {
@@ -136,7 +139,7 @@ pub fn callback(
     Ok(())
 }
 
-fn exit(control_flow: &mut ControlFlow, app: &App) -> Result<()> {
+fn exit(control_flow: &mut ControlFlow, app: &Youtubby) -> Result<()> {
     app.preferences.save()?;
     *control_flow = ControlFlow::Exit;
     Ok(())

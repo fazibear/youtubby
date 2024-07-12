@@ -1,6 +1,7 @@
-use crate::assets;
-use crate::player_state_changed::PlayerStateChanged;
-use crate::window_handler::{URL, USER_AGENT, WINDOW_MIN_SIZE, WINDOW_SIZE};
+use crate::youtubby::assets;
+use crate::youtubby::player_state_changed::PlayerStateChanged;
+
+use crate::youtubby::window_handler::{URL, USER_AGENT, WINDOW_MIN_SIZE, WINDOW_SIZE};
 use anyhow::Result;
 use tao::platform::macos::{EventLoopExtMacOS, WindowBuilderExtMacOS};
 use tao::{

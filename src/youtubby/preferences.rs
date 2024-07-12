@@ -5,7 +5,7 @@ use std::fs::{self, File};
 use std::io::{Read, Write};
 use std::path::PathBuf;
 
-use crate::last_fm;
+use super::last_fm;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Preferences {
