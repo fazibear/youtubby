@@ -15,7 +15,7 @@ pub struct WindowHandler {
 }
 
 impl WindowHandler {
-    pub fn init(event_loop: &mut EventLoop<PlayerStateChanged>) -> Result<WindowHandler> {
+    pub fn init(event_loop: &mut YoutubbyEventLoop) -> Result<WindowHandler> {
         let (icon, icon_width, icon_height) = assets::get_image(assets::ICON)?;
         let window = WindowBuilder::new()
             .with_title("Youtubby")

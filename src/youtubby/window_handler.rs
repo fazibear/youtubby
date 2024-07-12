@@ -18,7 +18,7 @@ pub use macos::WindowHandler;
 
 use super::Youtubby;
 use anyhow::Result;
-use tao::dpi::{LogicalSize, PhysicalPosition, PhysicalSize};
+use wry::dpi::{LogicalSize, PhysicalPosition, PhysicalSize};
 
 pub static WINDOW_WIDTH: u32 = 896;
 pub static WINDOW_HEIGHT: u32 = 1536;
@@ -30,7 +30,7 @@ pub static WINDOW_MIN_SIZE: LogicalSize<u32> = LogicalSize::new(320, 0);
 
 impl WindowHandler {
     pub fn show_hide(&self, position: PhysicalPosition<f64>) {
-        if self.window.is_visible() {
+        if self.window.is_visible().unwrap_or(false) {
             self.hide();
         } else {
             self.set_position(position);
@@ -40,7 +40,7 @@ impl WindowHandler {
 
     pub fn hide(&self) {
         self.window.set_visible(false);
-        self.window.set_visible_on_all_workspaces(false);
+        //self.window.set_visible_on_all_workspaces(false);
     }
 
     pub fn set_position(&self, position: PhysicalPosition<f64>) {
@@ -52,14 +52,14 @@ impl WindowHandler {
 
     pub fn show(&self) {
         self.window.set_visible(true);
-        self.window.set_visible_on_all_workspaces(true);
-        self.window.set_focus();
+        //self.window.set_visible_on_all_workspaces(true);
+        //self.window.set_focus();
     }
 }
 
-pub fn refresh(app: &mut Youtubby) -> Result<()> {
-    app.window_handler
-        .window
-        .set_always_on_top(app.preferences.always_on_top);
+pub fn refresh(_app: &mut Youtubby) -> Result<()> {
+    // app.window_handler
+    //     .window
+    //     .set_always_on_top(app.preferences.always_on_top);
     Ok(())
 }
