@@ -40,7 +40,6 @@ impl WindowHandler {
 
     pub fn hide(&self) {
         self.window.set_visible(false);
-        //self.window.set_visible_on_all_workspaces(false);
     }
 
     pub fn set_position(&self, position: PhysicalPosition<f64>) {
@@ -52,14 +51,12 @@ impl WindowHandler {
 
     pub fn show(&self) {
         self.window.set_visible(true);
-        //self.window.set_visible_on_all_workspaces(true);
-        //self.window.set_focus();
+        // ALL WORKSPACES
+        self.window.sticky();
+        self.window.focus_window();
     }
 }
 
 pub fn refresh(_app: &mut Youtubby) -> Result<()> {
-    // app.window_handler
-    //     .window
-    //     .set_always_on_top(app.preferences.always_on_top);
-    Ok(())
+    todo!("Always on top")
 }
