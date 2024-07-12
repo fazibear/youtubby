@@ -1,4 +1,4 @@
-use super::{
+use crate::Youtubby::{
     assets,
     player_state_changed::PlayerStateChanged,
     window_handler::{URL, USER_AGENT, WINDOW_MIN_SIZE, WINDOW_SIZE},
