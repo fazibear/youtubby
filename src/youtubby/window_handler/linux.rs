@@ -1,12 +1,11 @@
-use crate::assets;
-use crate::player_state_changed::PlayerStateChanged;
-use crate::window_handler::{URL, USER_AGENT, WINDOW_MIN_SIZE, WINDOW_SIZE};
-use anyhow::{Context, Result};
-use tao::platform::unix::{WindowBuilderExtUnix, WindowExtUnix};
-use tao::{
-    event_loop::EventLoop,
-    window::{Icon, Window, WindowBuilder},
+use super::{
+    assets,
+    player_state_changed::PlayerStateChanged,
+    window_handler::{URL, USER_AGENT, WINDOW_MIN_SIZE, WINDOW_SIZE},
 };
+use anyhow::{Context, Result};
+use winit::platform::macos::LinuxAttributesExtWindowsOs;
+use winit::window::{Icon, Window, WindowAttributes};
 use wry::{http::Request, WebView, WebViewBuilder, WebViewBuilderExtUnix};
 
 pub struct WindowHandler {
