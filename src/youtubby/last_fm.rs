@@ -1,11 +1,14 @@
-use crate::app::App;
-use crate::player_state::{PlayerState, PlayerStateMetaData};
 use anyhow::{Context, Result};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use serde_json_path::JsonPath;
 use url::Url;
 use url_encoded_data::UrlEncodedData;
+
+use super::{
+    player_state::{PlayerState, PlayerStateMetaData},
+    Youtubby,
+};
 
 const API_KEY: &str = "0418be880444b5a60329196d88a4909d";
 const API_SECRET: &str = "8dca20779af23f6eb67f5ea424042059";
@@ -20,7 +23,7 @@ pub enum State {
     Connected((String, String)),
 }
 
-pub fn track_update_now_playing(app: &mut App) -> Result<()> {
+pub fn track_update_now_playing(app: &mut Youtubby) -> Result<()> {
     if let PlayerStateMetaData {
         track: Some(ref track),
         artist: Some(ref artist),
@@ -64,8 +67,9 @@ pub fn track_update_now_playing(app: &mut App) -> Result<()> {
     Ok(())
 }
 
-pub fn track_scrobble_at_half(app: &mut App) -> Result<()> {
-    if let (Some(duration), Some(position)) = (app.player_state.duration, app.player_state.position) {
+pub fn track_scrobble_at_half(app: &mut Youtubby) -> Result<()> {
+    if let (Some(duration), Some(position)) = (app.player_state.duration, app.player_state.position)
+    {
         if (duration / 2) == position {
             let _ = track_scrobble(app);
         }
@@ -73,7 +77,7 @@ pub fn track_scrobble_at_half(app: &mut App) -> Result<()> {
     Ok(())
 }
 
-pub fn track_scrobble(app: &mut App) -> Result<()> {
+pub fn track_scrobble(app: &mut Youtubby) -> Result<()> {
     if let PlayerState {
         timestamp,
         metadata:
@@ -120,7 +124,7 @@ pub fn track_scrobble(app: &mut App) -> Result<()> {
     Ok(())
 }
 
-pub fn set_menu(app: &mut App) {
+pub fn set_menu(app: &mut Youtubby) {
     match app.preferences.last_fm {
         State::None => {
             app.menu_handler.last_fm_info.set_text("Not logged in");
@@ -143,7 +147,7 @@ pub fn set_menu(app: &mut App) {
     }
 }
 
-pub fn menu_click(app: &mut App) -> Result<()> {
+pub fn menu_click(app: &mut Youtubby) -> Result<()> {
     match app.preferences.last_fm {
         State::None => {
             if let Ok(token) = auth_get_token() {

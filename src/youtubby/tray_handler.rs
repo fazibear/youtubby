@@ -1,6 +1,9 @@
-use crate::app::App;
-use crate::player_state::{self, PlayerState, PlayerStateMetaData};
-use crate::{assets, menu_handler::MenuHandler};
+use super::{
+    assets,
+    menu_handler::MenuHandler,
+    player_state::{self, PlayerState, PlayerStateMetaData},
+    Youtubby,
+};
 use anyhow::Result;
 use tray_icon::{Icon, TrayIcon, TrayIconBuilder};
 
@@ -25,7 +28,7 @@ impl TrayHandler {
     }
 }
 
-pub fn refresh(app: &mut App) -> Result<()> {
+pub fn refresh(app: &mut Youtubby) -> Result<()> {
     let tray = if app.preferences.show_info_in_tray {
         player_info(&app.player_state)
     } else {
