@@ -4,7 +4,7 @@ use super::{
     window_handler::{URL, USER_AGENT, WINDOW_MIN_SIZE, WINDOW_SIZE},
 };
 use anyhow::Result;
-use winit::platform::macos::WindowAttributesExtWindowsOs;
+use winit::platform::macos::{WindowAttributesExtWindowsOs, WindowExtWindowsOs};
 use winit::window::{Icon, Window, WindowAttributes};
 use wry::{http::Request, WebView, WebViewBuilder};
 

@@ -5,7 +5,7 @@ use crate::youtubby::{
     YoutubbyEventLoop,
 };
 use anyhow::Result;
-use winit::platform::macos::WindowAttributesExtMacOS;
+use winit::platform::macos::{WindowAttributesExtMacOS, WindowExtMacOS};
 use winit::window::{Icon, Window, WindowAttributes};
 use wry::{http::Request, WebView, WebViewBuilder};
 
