@@ -67,9 +67,6 @@ pub fn callback(
             event: WindowEvent::CloseRequested,
             ..
         } => exit(control_flow, app)?,
-        Event::MainEventsCleared => {
-            app.window_handler.window.request_redraw();
-        }
         e => debug!("Event: {e:?}"),
     };
 
