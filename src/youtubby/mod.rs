@@ -9,7 +9,7 @@ mod preferences;
 mod tray_handler;
 mod window_handler;
 
-use anyhow::Result;
+use anyhow::{Context, Result};
 use key_handler::KeyHandler;
 use menu_handler::MenuHandler;
 use player_state::PlayerState;
@@ -17,12 +17,14 @@ use player_state_changed::PlayerStateChanged;
 use preferences::Preferences;
 use simple_logger::SimpleLogger;
 use std::collections::HashMap;
-use tao::{
-    event::Event,
-    event_loop::{ControlFlow, EventLoop, EventLoopBuilder},
-};
 use tray_handler::TrayHandler;
 use window_handler::WindowHandler;
+use winit::{
+    application::ApplicationHandler,
+    event::{DeviceEvent, DeviceId, WindowEvent},
+    event_loop::{ActiveEventLoop, EventLoop},
+    window::WindowId,
+};
 
 type YoutubbyEventLoop = EventLoop<PlayerStateChanged>;
 
@@ -36,9 +38,42 @@ pub struct Youtubby {
     pub cache: HashMap<String, String>,
 }
 
+impl ApplicationHandler<PlayerStateChanged> for Youtubby {
+    fn resumed(&mut self, _event_loop: &ActiveEventLoop) {}
+
+    fn window_event(
+        &mut self,
+        event_loop: &ActiveEventLoop,
+        _window_id: WindowId,
+        event: WindowEvent,
+    ) {
+        events_handler::handle_window_events(self, &event, &mut event_loop.control_flow()).unwrap();
+    }
+
+    fn user_event(&mut self, event_loop: &ActiveEventLoop, event: PlayerStateChanged) {
+        events_handler::handle_user_events(self, &event, &mut event_loop.control_flow()).unwrap();
+    }
+
+    fn device_event(
+        &mut self,
+        _event_loop: &ActiveEventLoop,
+        _device_id: DeviceId,
+        _event: DeviceEvent,
+    ) {
+    }
+
+    fn about_to_wait(&mut self, event_loop: &ActiveEventLoop) {
+        events_handler::handle_menu_events(self, &mut event_loop.control_flow()).unwrap();
+        events_handler::handle_tray_events(self, &mut event_loop.control_flow()).unwrap();
+        events_handler::handle_hotkey_events(self, &mut event_loop.control_flow()).unwrap();
+    }
+}
+
 impl Youtubby {
-    pub fn build_event_loop() -> YoutubbyEventLoop {
-        EventLoopBuilder::<PlayerStateChanged>::with_user_event().build()
+    pub fn build_event_loop() -> Result<YoutubbyEventLoop> {
+        EventLoop::<PlayerStateChanged>::with_user_event()
+            .build()
+            .context("Failed to build event loop")
     }
 
     pub fn new(event_loop: &mut YoutubbyEventLoop) -> Result<Self> {
@@ -67,10 +102,6 @@ impl Youtubby {
         log::info!("Started");
 
         Ok(app)
-    }
-
-    pub fn tick(&mut self, event: &Event<PlayerStateChanged>, control_flow: &mut ControlFlow) {
-        events_handler::callback(self, event, control_flow).expect("tick");
     }
 
     #[cfg(build = "release")]

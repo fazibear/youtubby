@@ -6,73 +6,68 @@ use anyhow::Result;
 use global_hotkey::{GlobalHotKeyEvent, HotKeyState};
 use log::debug;
 use muda::MenuEvent;
-use tao::{
-    event::{Event, WindowEvent},
-    event_loop::ControlFlow,
-};
 use tray_icon::{MouseButton, MouseButtonState, TrayIconEvent, TrayIconId};
+use winit::{event::WindowEvent, event_loop::ControlFlow};
 
-pub fn callback(
+pub fn handle_window_events(
     app: &mut Youtubby,
-    event: &Event<PlayerStateChanged>,
+    event: &WindowEvent,
     control_flow: &mut ControlFlow,
 ) -> Result<()> {
-    *control_flow = ControlFlow::Wait;
-
     match event {
-        Event::UserEvent(user_event) => {
-            log::debug!("UserEvent: {:?}", user_event);
-
-            match user_event {
-                PlayerStateChanged::Stop => {
-                    app.player_state.state = player_state::State::Stoped;
-                    tray_handler::refresh(app)?;
-                }
-                PlayerStateChanged::Pause => {
-                    app.player_state.state = player_state::State::Paused;
-                    tray_handler::refresh(app)?;
-                }
-                PlayerStateChanged::Emptied => {
-                    app.player_state.reset();
-                    tray_handler::refresh(app)?;
-                }
-                PlayerStateChanged::Play => {
-                    app.player_state.state = player_state::State::Playing;
-                    tray_handler::refresh(app)?;
-                }
-                PlayerStateChanged::LoadMetaData(metadata) => {
-                    app.player_state.metadata = metadata.clone();
-                    last_fm::track_update_now_playing(app)?;
-                    tray_handler::refresh(app)?;
-                }
-                PlayerStateChanged::MetaDataUpdate(metadata) => {
-                    app.player_state.metadata = metadata.clone();
-                    tray_handler::refresh(app)?;
-                }
-                PlayerStateChanged::TimeUpdate(time) => {
-                    app.player_state.position = Some(*time);
-                    last_fm::track_scrobble_at_half(app)?;
-                }
-                PlayerStateChanged::DurationChange(duration) => {
-                    app.player_state.duration = Some(*duration);
-                }
-                e => log::debug!("Unhandled PlayerState Event: {e:?}"),
-            }
+        WindowEvent::Focused(false) if app.preferences.hide_unfocused_window => {
+            app.window_handler.hide()
         }
-        Event::WindowEvent {
-            event: WindowEvent::Focused(false),
-            ..
-        } if app.preferences.hide_unfocused_window => app.window_handler.hide(),
-        Event::WindowEvent {
-            event: WindowEvent::CloseRequested,
-            ..
-        } => exit(control_flow, app)?,
-        Event::MainEventsCleared => {
-            app.window_handler.window.request_redraw();
-        }
+        WindowEvent::CloseRequested => exit(control_flow, app)?,
         e => debug!("Event: {e:?}"),
     };
+    Ok(())
+}
 
+pub fn handle_user_events(
+    app: &mut Youtubby,
+    event: &PlayerStateChanged,
+    _control_flow: &mut ControlFlow,
+) -> Result<()> {
+    match event {
+        PlayerStateChanged::Stop => {
+            app.player_state.state = player_state::State::Stoped;
+            tray_handler::refresh(app)?;
+        }
+        PlayerStateChanged::Pause => {
+            app.player_state.state = player_state::State::Paused;
+            tray_handler::refresh(app)?;
+        }
+        PlayerStateChanged::Emptied => {
+            app.player_state.reset();
+            tray_handler::refresh(app)?;
+        }
+        PlayerStateChanged::Play => {
+            app.player_state.state = player_state::State::Playing;
+            tray_handler::refresh(app)?;
+        }
+        PlayerStateChanged::LoadMetaData(metadata) => {
+            app.player_state.metadata = metadata.clone();
+            last_fm::track_update_now_playing(app)?;
+            tray_handler::refresh(app)?;
+        }
+        PlayerStateChanged::MetaDataUpdate(metadata) => {
+            app.player_state.metadata = metadata.clone();
+            tray_handler::refresh(app)?;
+        }
+        PlayerStateChanged::TimeUpdate(time) => {
+            app.player_state.position = Some(*time);
+            last_fm::track_scrobble_at_half(app)?;
+        }
+        PlayerStateChanged::DurationChange(duration) => {
+            app.player_state.duration = Some(*duration);
+        }
+        e => log::debug!("Unhandled PlayerState Event: {e:?}"),
+    }
+    Ok(())
+}
+
+pub fn handle_hotkey_events(app: &mut Youtubby, _control_flow: &mut ControlFlow) -> Result<()> {
     if let Ok(event) = GlobalHotKeyEvent::receiver().try_recv() {
         match event {
             GlobalHotKeyEvent {
@@ -87,7 +82,10 @@ pub fn callback(
             e => debug!("GlobalHotKeyEvent: {e:?}"),
         }
     }
+    Ok(())
+}
 
+pub fn handle_tray_events(app: &mut Youtubby, _control_flow: &mut ControlFlow) -> Result<()> {
     if let Ok(event) = TrayIconEvent::receiver().try_recv() {
         match event {
             TrayIconEvent::Click {
@@ -100,6 +98,10 @@ pub fn callback(
             e => debug!("TrayIconEvent: {e:?}"),
         }
     }
+    Ok(())
+}
+
+pub fn handle_menu_events(app: &mut Youtubby, control_flow: &mut ControlFlow) -> Result<()> {
     if let Ok(event) = MenuEvent::receiver().try_recv() {
         match event.id.0.as_str() {
             "show" => app.window_handler.show(),
@@ -139,8 +141,8 @@ pub fn callback(
     Ok(())
 }
 
-fn exit(control_flow: &mut ControlFlow, app: &Youtubby) -> Result<()> {
+fn exit(_control_flow: &mut ControlFlow, app: &Youtubby) -> Result<()> {
     app.preferences.save()?;
-    *control_flow = ControlFlow::Exit;
+    //exit!
     Ok(())
 }
