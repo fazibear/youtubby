@@ -3,7 +3,7 @@ use crate::youtubby::{
     player_state_changed::PlayerStateChanged,
     window_handler::{URL, USER_AGENT, WINDOW_MIN_SIZE, WINDOW_SIZE},
 };
-use anyhow::Result;
+use anyhow::{Context, Result};
 use tao::platform::unix::{WindowBuilderExtUnix, WindowExtUnix};
 use tao::{
     event_loop::EventLoop,
