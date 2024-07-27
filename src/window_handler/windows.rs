@@ -16,19 +16,21 @@ pub mod platform {
     }
 
     pub fn webview_builder(window: &Window) -> WebViewBuilder {
-        WebViewBuilder::new(&window);
+        WebViewBuilder::new(&window)
     }
 
     pub fn init_event_loop(_event_loop: &mut EventLoop<PlayerStateChanged>) {}
 
-    pub unsafe fn open_url(url: &str) {
-        shell32::ShellExecuteA(
-            ptr::null_mut(),
-            CString::new("open").unwrap().as_ptr(),
-            CString::new(url.replace("\n", "%0A")).unwrap().as_ptr(),
-            ptr::null(),
-            ptr::null(),
-            1,
-        );
+    pub fn open_url(url: &str) {
+        unsafe {
+            shell32::ShellExecuteA(
+                ptr::null_mut(),
+                CString::new("open").unwrap().as_ptr(),
+                CString::new(url.replace("\n", "%0A")).unwrap().as_ptr(),
+                ptr::null(),
+                ptr::null(),
+                1,
+            );
+        }
     }
 }
