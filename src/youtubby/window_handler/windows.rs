@@ -7,7 +7,7 @@ use anyhow::Result;
 use tao::platform::windows::{EventLoopBuilderExtWindows, WindowExtWindows};
 use tao::{
     event_loop::EventLoop,
-    window::{Icon, Window, WindowBuilder},
+    window::{Window, WindowBuilder},
 };
 use wry::{http::Request, WebView, WebViewBuilder};
 
@@ -18,14 +18,13 @@ pub struct WindowHandler {
 
 impl WindowHandler {
     pub fn init(event_loop: &mut EventLoop<PlayerStateChanged>) -> Result<WindowHandler> {
-        let (icon, icon_width, icon_height) = assets::get_image(assets::ICON)?;
         let window = WindowBuilder::new()
             .with_title("Youtubby")
             .with_inner_size(WINDOW_SIZE)
             .with_min_inner_size(WINDOW_MIN_SIZE)
             .with_visible(false)
             .with_focused(true)
-            .with_window_icon(Some(Icon::from_rgba(icon, icon_width, icon_height)?))
+            .with_window_icon(assets::window_icon().ok())
             .build(event_loop)?;
 
         let builder = WebViewBuilder::new(&window);

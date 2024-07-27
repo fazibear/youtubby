@@ -29,17 +29,17 @@ impl MenuHandler {
                 None,
             ),
             &CheckMenuItem::with_id(
-                "show_info_in_tray",
-                "Show info in tray",
-                true,
-                preferences.show_info_in_tray,
-                None,
-            ),
-            &CheckMenuItem::with_id(
                 "show_info_in_tooltip",
                 "Show info in tooltip",
                 true,
                 preferences.show_info_in_tooltip,
+                None,
+            ),
+            &CheckMenuItem::with_id(
+                "show_info_in_tray",
+                "Show info in tray",
+                true,
+                preferences.show_info_in_tray,
                 None,
             ),
         ])?;
