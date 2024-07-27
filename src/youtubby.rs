@@ -1,28 +1,20 @@
-mod assets;
-mod events_handler;
-mod key_handler;
-mod last_fm;
-mod menu_handler;
-mod player_state;
-mod player_state_changed;
-mod preferences;
-mod tray_handler;
-mod window_handler;
+use crate::events_handler;
+use crate::key_handler::KeyHandler;
+use crate::last_fm;
+use crate::menu_handler::MenuHandler;
+use crate::player_state::PlayerState;
+use crate::player_state_changed::PlayerStateChanged;
+use crate::preferences::Preferences;
+use crate::tray_handler::TrayHandler;
+use crate::window_handler::WindowHandler;
 
 use anyhow::Result;
-use key_handler::KeyHandler;
-use menu_handler::MenuHandler;
-use player_state::PlayerState;
-use player_state_changed::PlayerStateChanged;
-use preferences::Preferences;
 use simple_logger::SimpleLogger;
 use std::collections::HashMap;
 use tao::{
     event::Event,
     event_loop::{ControlFlow, EventLoop, EventLoopBuilder},
 };
-use tray_handler::TrayHandler;
-use window_handler::WindowHandler;
 
 type YoutubbyEventLoop = EventLoop<PlayerStateChanged>;
 

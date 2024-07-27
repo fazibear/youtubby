@@ -1,3 +1,13 @@
+mod assets;
+mod events_handler;
+mod key_handler;
+mod last_fm;
+mod menu_handler;
+mod player_state;
+mod player_state_changed;
+mod preferences;
+mod tray_handler;
+mod window_handler;
 mod youtubby;
 
 use anyhow::Result;
