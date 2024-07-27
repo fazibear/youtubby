@@ -12,7 +12,6 @@ pub mod platform {
             .with_skip_taskbar(true)
             .with_visible_on_all_workspaces(true)
             .with_skip_taskbar(true)
-            .with_fullsize_content_view(true)
             .with_title_hidden(true)
             .with_titlebar_buttons_hidden(true)
     }
