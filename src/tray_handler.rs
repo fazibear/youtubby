@@ -19,7 +19,6 @@ impl TrayHandler {
             .with_id("0")
             .with_menu(Box::new(menu_handler.menu.clone()))
             .with_menu_on_left_click(false)
-            .with_icon(assets::player_default_icon()?)
             .build()?;
 
         Ok(Self { icon })
