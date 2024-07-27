@@ -16,7 +16,7 @@ pub mod platform {
     }
 
     pub fn webview_builder(window: &Window) -> WebViewBuilder {
-        WebViewBuilder::new(&window)
+        WebViewBuilder::new(window)
     }
 
     pub fn init_event_loop(_event_loop: &mut EventLoop<PlayerStateChanged>) {}
