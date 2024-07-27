@@ -1,11 +1,11 @@
 use super::{
     assets,
     menu_handler::MenuHandler,
-    player_state::{self, PlayerState, PlayerStateMetaData},
+    player_state::{PlayerState, PlayerStateMetaData},
     Youtubby,
 };
 use anyhow::Result;
-use tray_icon::{Icon, TrayIcon, TrayIconBuilder};
+use tray_icon::{TrayIcon, TrayIconBuilder};
 
 const MAX_PLAYER_INFO_STRING_LENGTH: usize = 46;
 
@@ -15,13 +15,11 @@ pub struct TrayHandler {
 
 impl TrayHandler {
     pub fn init(menu_handler: &MenuHandler) -> Result<TrayHandler> {
-        let (icon_data, icon_width, icon_height) = assets::get_image(assets::ICON)?;
-        let icon_data = Icon::from_rgba(icon_data, icon_width, icon_height)?;
         let icon = TrayIconBuilder::new()
             .with_id("0")
             .with_menu(Box::new(menu_handler.menu.clone()))
             .with_menu_on_left_click(false)
-            .with_icon(icon_data)
+            .with_icon(assets::player_default_icon()?)
             .build()?;
 
         Ok(Self { icon })
@@ -41,25 +39,22 @@ pub fn refresh(app: &mut Youtubby) -> Result<()> {
         None
     };
 
+    let icon = assets::player_info_icon(&app.player_state).ok();
+
     app.tray_handler.icon.set_title(tray);
+    app.tray_handler.icon.set_icon(icon)?;
     app.tray_handler.icon.set_tooltip(tooltip)?;
     Ok(())
 }
 
 pub fn player_info(state: &PlayerState) -> Option<String> {
-    let icon = match state.state {
-        player_state::State::Playing => "󰐊",
-        player_state::State::Paused => "󰏤",
-        player_state::State::Stoped => "󰓛",
-    };
-
     if let PlayerStateMetaData {
         artist: Some(ref artist),
         track: Some(ref track),
         ..
     } = state.metadata
     {
-        let info = format!("{icon} {artist} - {track}");
+        let info = format!("{artist} - {track}");
 
         if info.chars().count() > MAX_PLAYER_INFO_STRING_LENGTH {
             let short = truncate(&info, MAX_PLAYER_INFO_STRING_LENGTH);

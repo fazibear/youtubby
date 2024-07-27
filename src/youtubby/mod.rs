@@ -73,7 +73,7 @@ impl Youtubby {
         events_handler::callback(self, event, control_flow).expect("tick");
     }
 
-    #[cfg(build = "release")]
+    #[cfg(not(debug_assertions))]
     fn init_logger() -> Result<()> {
         SimpleLogger::new()
             .with_level(log::LevelFilter::Off)
@@ -82,7 +82,7 @@ impl Youtubby {
         Ok(())
     }
 
-    #[cfg(not(build = "release"))]
+    #[cfg(debug_assertions)]
     fn init_logger() -> Result<()> {
         SimpleLogger::new()
             .with_level(log::LevelFilter::Info)

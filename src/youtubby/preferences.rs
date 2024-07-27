@@ -19,7 +19,7 @@ pub struct Preferences {
 impl Preferences {
     pub fn new() -> Preferences {
         Preferences {
-            show_info_in_tray: true,
+            show_info_in_tray: false,
             show_info_in_tooltip: true,
             hide_unfocused_window: true,
             always_on_top: true,
