@@ -35,11 +35,6 @@ pub fn window_icon() -> Result<WindowIcon> {
     Ok(WindowIcon::from_rgba(icon_data, icon_width, icon_height)?)
 }
 
-pub fn player_default_icon() -> Result<TrayIcon> {
-    let (icon_data, icon_width, icon_height) = get_image(STOP_ICON)?;
-    Ok(TrayIcon::from_rgba(icon_data, icon_width, icon_height)?)
-}
-
 pub fn player_info_icon(state: &PlayerState) -> Result<TrayIcon> {
     let (icon_data, icon_width, icon_height) = match state.state {
         State::Playing => get_image(PLAY_ICON)?,
