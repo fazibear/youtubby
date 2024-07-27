@@ -16,11 +16,10 @@ pub mod platform {
     }
 
     pub fn webview_builder(window: &Window) -> WebViewBuilder {
-        let vbox = window.default_vbox().expect("no default vbox");
-        WebViewBuilder::new_gtk(vbox)
+        WebViewBuilder::new(&window);
     }
 
-    pub fn init_event_loop(event_loop: &mut EventLoop<PlayerStateChanged>) {}
+    pub fn init_event_loop(_event_loop: &mut EventLoop<PlayerStateChanged>) {}
 
     pub unsafe fn open_url(url: &str) {
         shell32::ShellExecuteA(

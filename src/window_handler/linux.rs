@@ -2,7 +2,7 @@ pub mod platform {
     use tao::event_loop::EventLoop;
     use tao::platform::unix::{WindowBuilderExtUnix, WindowExtUnix};
     use tao::window::{Window, WindowBuilder};
-    use wry::WebViewBuilder;
+    use wry::{WebViewBuilder, WebViewBuilderExtUnix};
 
     use crate::player_state_changed::PlayerStateChanged;
 
@@ -12,7 +12,6 @@ pub mod platform {
             .with_skip_taskbar(true)
             .with_visible_on_all_workspaces(true)
             .with_skip_taskbar(true)
-            .with_titlebar_transparent(true)
             .with_fullsize_content_view(true)
             .with_title_hidden(true)
             .with_titlebar_buttons_hidden(true)
@@ -23,7 +22,7 @@ pub mod platform {
         WebViewBuilder::new_gtk(vbox)
     }
 
-    pub fn init_event_loop(event_loop: &mut EventLoop<PlayerStateChanged>) {}
+    pub fn init_event_loop(_event_loop: &mut EventLoop<PlayerStateChanged>) {}
 
     pub fn open_url(url: &str) {
         let _ = std::process::Command::new("xdg-open").arg(url).output();
