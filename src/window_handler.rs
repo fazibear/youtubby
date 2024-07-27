@@ -1,22 +1,19 @@
 #[cfg(target_os = "windows")]
-#[path = "window_handler/windows.rs"]
 mod windows;
 #[cfg(target_os = "windows")]
 pub use windows::WindowHandler;
 
 #[cfg(target_os = "linux")]
-#[path = "window_handler/linux.rs"]
 mod linux;
 #[cfg(target_os = "linux")]
 pub use linux::WindowHandler;
 
 #[cfg(target_os = "macos")]
-#[path = "window_handler/macos.rs"]
 mod macos;
 #[cfg(target_os = "macos")]
 pub use macos::WindowHandler;
 
-use super::Youtubby;
+use crate::Youtubby;
 use anyhow::Result;
 use tao::dpi::{LogicalSize, PhysicalPosition, PhysicalSize};
 
