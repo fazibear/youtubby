@@ -1,14 +1,13 @@
+use crate::{
+    player_state::{PlayerState, PlayerStateMetaData},
+    Youtubby,
+};
 use anyhow::{Context, Result};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use serde_json_path::JsonPath;
 use url::Url;
 use url_encoded_data::UrlEncodedData;
-
-use super::{
-    player_state::{PlayerState, PlayerStateMetaData},
-    Youtubby,
-};
 
 const API_KEY: &str = "0418be880444b5a60329196d88a4909d";
 const API_SECRET: &str = "8dca20779af23f6eb67f5ea424042059";
