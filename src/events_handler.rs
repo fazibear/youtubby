@@ -1,4 +1,4 @@
-use super::{
+use crate::{
     last_fm, player_state, player_state_changed::PlayerStateChanged, tray_handler, window_handler,
     Youtubby,
 };

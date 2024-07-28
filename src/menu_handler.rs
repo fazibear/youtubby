@@ -1,4 +1,4 @@
-use super::{assets, preferences::Preferences};
+use crate::{assets, preferences::Preferences};
 use anyhow::Result;
 use muda::{AboutMetadata, CheckMenuItem, Menu, MenuId, MenuItem, PredefinedMenuItem, Submenu};
 

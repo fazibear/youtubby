@@ -1,13 +1,14 @@
-use crate::events_handler;
-use crate::key_handler::KeyHandler;
-use crate::last_fm;
-use crate::menu_handler::MenuHandler;
-use crate::player_state::PlayerState;
-use crate::player_state_changed::PlayerStateChanged;
-use crate::preferences::Preferences;
-use crate::tray_handler::TrayHandler;
-use crate::window_handler::WindowHandler;
-
+use crate::{
+    events_handler,
+    key_handler::KeyHandler,
+    last_fm,
+    menu_handler::MenuHandler,
+    player_state::PlayerState,
+    player_state_changed::PlayerStateChanged,
+    preferences::Preferences,
+    tray_handler::{self, TrayHandler},
+    window_handler::{self, WindowHandler},
+};
 use anyhow::Result;
 use simple_logger::SimpleLogger;
 use std::collections::HashMap;
@@ -54,6 +55,8 @@ impl Youtubby {
             cache,
         };
 
+        tray_handler::refresh(&mut app)?;
+        window_handler::refresh(&mut app)?;
         last_fm::set_menu(&mut app);
 
         log::info!("Started");

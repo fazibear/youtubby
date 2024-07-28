@@ -1,11 +1,12 @@
+use crate::last_fm;
 use anyhow::{Context, Result};
 use directories::ProjectDirs;
 use serde::{Deserialize, Serialize};
-use std::fs::{self, File};
-use std::io::{Read, Write};
-use std::path::PathBuf;
-
-use super::last_fm;
+use std::{
+    fs::{self, File},
+    io::{Read, Write},
+    path::PathBuf,
+};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Preferences {

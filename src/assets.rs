@@ -1,4 +1,4 @@
-use super::player_state::{PlayerState, State};
+use crate::player_state::{PlayerState, State};
 use anyhow::Result;
 use tao::window::Icon as WindowIcon;
 use tray_icon::Icon as TrayIcon;
