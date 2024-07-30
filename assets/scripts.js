@@ -1,11 +1,6 @@
-function PlayAll() {
-  var xpath = "//span[text()='Play all']";
-  document
-    .evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null)
-    .singleNodeValue
-    .parentNode
-    .parentNode
-    .click();
+function PlaySomething() {
+  let buttons = document.getElementsByClassName("ytmusic-play-button-renderer");
+  buttons[0].click();
 }
 
 function PlayPause() {// #top-player-bar
@@ -16,7 +11,7 @@ function PlayPauseClick() {
   if(document.getElementById('layout').getAttributeNames().includes('player-visible')){
     PlayPause();
   }else{
-    PlayAll();
+    PlaySomething();
   }
 }
 
