@@ -17,7 +17,7 @@ pub fn callback(
     event: &Event<PlayerStateChanged>,
     control_flow: &mut ControlFlow,
 ) -> Result<()> {
-    *control_flow = ControlFlow::Wait;
+    *control_flow = ControlFlow::Poll;
 
     match event {
         Event::UserEvent(user_event) => {
@@ -66,7 +66,7 @@ pub fn callback(
         Event::WindowEvent {
             event: WindowEvent::CloseRequested,
             ..
-        } => exit(control_flow, app)?,
+        } => app.window_handler.hide(),
         e => debug!("Event: {e:?}"),
     };
 
@@ -133,6 +133,7 @@ pub fn callback(
             e => debug!("MenuEvent: {e:?}"),
         }
     }
+
     Ok(())
 }
 
