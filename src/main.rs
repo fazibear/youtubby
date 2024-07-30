@@ -3,6 +3,7 @@ mod events_handler;
 mod key_handler;
 mod last_fm;
 mod menu_handler;
+mod platform;
 mod player_state;
 mod player_state_changed;
 mod preferences;

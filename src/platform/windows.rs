@@ -2,14 +2,14 @@ pub mod platform {
     extern crate shell32;
     extern crate winapi;
 
-    use std::ffi::CString;
-    use std::ptr;
-    use tao::event_loop::EventLoop;
-    use tao::platform::windows::{EventLoopBuilderExtWindows, WindowExtWindows};
-    use tao::window::{Window, WindowBuilder};
-    use wry::WebViewBuilder;
-
     use crate::player_state_changed::PlayerStateChanged;
+    use std::{ffi::CString, ptr};
+    use tao::{
+        event_loop::EventLoop,
+        platform::windows::{EventLoopBuilderExtWindows, WindowExtWindows},
+        window::{Window, WindowBuilder},
+    };
+    use wry::WebViewBuilder;
 
     pub fn window_builder(window_builder: WindowBuilder) -> WindowBuilder {
         window_builder

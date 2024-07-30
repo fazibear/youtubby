@@ -1,10 +1,11 @@
 pub mod platform {
-    use tao::event_loop::EventLoop;
-    use tao::platform::macos::{EventLoopExtMacOS, WindowBuilderExtMacOS};
-    use tao::window::{Window, WindowBuilder};
-    use wry::WebViewBuilder;
-
     use crate::player_state_changed::PlayerStateChanged;
+    use tao::{
+        event_loop::EventLoop,
+        platform::macos::{EventLoopExtMacOS, WindowBuilderExtMacOS},
+        window::{Window, WindowBuilder},
+    };
+    use wry::WebViewBuilder;
 
     pub fn window_builder(window_builder: WindowBuilder) -> WindowBuilder {
         window_builder
