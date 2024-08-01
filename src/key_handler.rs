@@ -1,6 +1,6 @@
 use anyhow::Result;
 use global_hotkey::{
-    hotkey::{Code, HotKey},
+    hotkey::{Code, HotKey, Modifiers},
     GlobalHotKeyManager,
 };
 use std::collections::HashMap;
@@ -19,7 +19,7 @@ impl KeyHandler {
     }
 
     pub fn register_keys(mut self) -> KeyHandler {
-        let modifiers = None;
+        let modifiers = Some(Modifiers::SHIFT);
         let play_pause_key = {
             #[cfg(target_os = "macos")]
             {
