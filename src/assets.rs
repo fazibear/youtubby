@@ -1,5 +1,6 @@
 use crate::player_state::{PlayerState, State};
 use anyhow::Result;
+use log::info;
 use tao::window::Icon as WindowIcon;
 use tray_icon::Icon as TrayIcon;
 
@@ -36,6 +37,7 @@ pub fn window_icon() -> Result<WindowIcon> {
 }
 
 pub fn player_info_icon(state: &PlayerState) -> Result<TrayIcon> {
+    info!("Updating icon with state: {:?}", state);
     let (icon_data, icon_width, icon_height) = match state.state {
         State::Playing => get_image(PLAY_ICON)?,
         State::Paused => get_image(PAUSE_ICON)?,

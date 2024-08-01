@@ -2,6 +2,10 @@
 
 set -e
 
+OS=macos
+MACHINE=x86_64
+MACHINE=arm64
+
 PREFIX=target
 BIN_NAME=youtubby
 APP_NAME=Youtubby
@@ -12,17 +16,17 @@ RESOURCES_DIR=$CONTENTS_DIR/Resources
 MACOS_DIR=$CONTENTS_DIR/MacOS
 APP_BIN=$MACOS_DIR/$BIN_NAME
 
-OS=macos
-MACHINE=x86_64
-MACHINE=arm64
+echo "Cleaning ..."
+rm -rf $APP_DIR
+cargo clean --release
 
 echo "Creating app directory structure"
-rm -rf $APP_DIR
 mkdir -p $CONTENTS_DIR
 mkdir -p $MACOS_DIR
 mkdir -p $RESOURCES_DIR
 
-cargo rustc --verbose --release
+echo "Compiling..."
+cargo rustc --frozen --release
 
 echo "Copying files"
 cp -v target/release/$BIN_NAME $APP_BIN
