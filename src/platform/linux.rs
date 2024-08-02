@@ -25,4 +25,8 @@ pub mod platform {
     pub fn open_url(url: &str) {
         let _ = std::process::Command::new("xdg-open").arg(url).output();
     }
+
+    pub fn set_control_flow(control_flow: &mut ControlFlow) {
+        *control_flow = ControlFlow::Poll;
+    }
 }
