@@ -33,4 +33,8 @@ pub mod platform {
             );
         }
     }
+
+    pub fn set_control_flow(control_flow: &mut ControlFlow) {
+        *control_flow = ControlFlow::Wait;
+    }
 }

@@ -1,7 +1,7 @@
 pub mod platform {
     use crate::player_state_changed::PlayerStateChanged;
     use tao::{
-        event_loop::EventLoop,
+        event_loop::{ControlFlow, EventLoop},
         platform::macos::{EventLoopExtMacOS, WindowBuilderExtMacOS},
         window::{Window, WindowBuilder},
     };
@@ -25,5 +25,9 @@ pub mod platform {
 
     pub fn open_url(url: &str) {
         let _ = std::process::Command::new("open").arg(url).output();
+    }
+
+    pub fn set_control_flow(control_flow: &mut ControlFlow) {
+        *control_flow = ControlFlow::Wait;
     }
 }

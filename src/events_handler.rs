@@ -1,5 +1,5 @@
 use crate::{
-    last_fm, player_state, player_state_changed::PlayerStateChanged, tray_handler, window_handler,
+    platform::platform, last_fm, player_state, player_state_changed::PlayerStateChanged, tray_handler, window_handler,
     Youtubby,
 };
 use anyhow::Result;
@@ -17,12 +17,10 @@ pub fn callback(
     event: &Event<PlayerStateChanged>,
     control_flow: &mut ControlFlow,
 ) -> Result<()> {
-    *control_flow = ControlFlow::Poll;
+    platform::set_control_flow(control_flow);
 
     match event {
         Event::UserEvent(user_event) => {
-            log::debug!("UserEvent: {:?}", user_event);
-
             match user_event {
                 PlayerStateChanged::Stop => {
                     app.player_state.state = player_state::State::Stoped;
