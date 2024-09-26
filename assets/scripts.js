@@ -47,7 +47,7 @@ let Youtubby = function(){
   var findAndAttachVideoEvents = function() {
     video = document.querySelector("video");
     if (!video){
-      return setTimeout(init, 250);
+      return setTimeout(findAndAttachVideoEvents, 250);
     }else{
       attachVideoEvents(video);
       video.parentNode.addEventListener('DOMNodeInserted', function(e) {
@@ -56,12 +56,19 @@ let Youtubby = function(){
     };
   }
 
-  let init = function() {
+  var loadCustomCSS = function() {
+    var cssStyle = document.createElement('style');
+    cssStyle.type = 'text/css';
+    var rules = document.createTextNode(YoutubbyCustomCSS);
+    cssStyle.appendChild(rules);
+    document.querySelector('head').appendChild(cssStyle);
+  }
+
+  window.addEventListener("load", function() {
+    loadCustomCSS();
     findAndAttachVideoEvents();
     attachMetaDataUpdate();
-  };
-
-  window.addEventListener("load", init);
+  });
 
   let playSomething = () => {
     let xpath = "//span[text()='Play all']";
@@ -96,24 +103,3 @@ let Youtubby = function(){
     playPauseClick: playPauseClick
   }
 }();
-
-// function FixBottomPlayer(event) {
-//   if((event.target.innerWidth || window.innerWidth) < 640) {
-//     console.log(event.target.innerWidth || window.innerWidth);
-//     document.querySelector('ytmusic-player-bar.ytmusic-app').removeAttribute('is-mweb-player-bar-modernization-enabled');
-//     document.querySelector('ytmusic-player-bar.ytmusic-app>#left-controls').style.display = "none";
-//     document.querySelector('ytmusic-player-bar.ytmusic-app>#right-controls').style.display = "none";
-//     document.querySelector('ytmusic-player-bar.ytmusic-app>#right-controls-mweb').style.display = "flex";
-//     document.querySelector('ytmusic-player-bar.ytmusic-app button[aria-label="Action menu"]').style.display = "none";
-//   }else{
-//     document.querySelector('ytmusic-player-bar.ytmusic-app>#left-controls').style.display = "";
-//     document.querySelector('ytmusic-player-bar.ytmusic-app>#right-controls').style.display = "";
-//     document.querySelector('ytmusic-player-bar.ytmusic-app button').style.display = "";
-//     document.querySelector('ytmusic-player-bar.ytmusic-app>#right-controls-mweb').style.display = "none";
-//     document.querySelector('ytmusic-player-bar.ytmusic-app button[aria-label="Action menu"]').style.display = "";
-//   }
-// }
-//
-// //window.addEventListener("load", FixBottomPlayer);
-// window.addEventListener("resize", FixBottomPlayer);
-//
