@@ -1,20 +1,22 @@
 use crate::{platform::platform, player_state_changed::PlayerStateChanged, Youtubby};
 use anyhow::Result;
 use tao::{
-    dpi::{LogicalSize, PhysicalPosition, PhysicalSize},
+    dpi::{LogicalSize, PhysicalPosition},
     event_loop::EventLoop,
     window::{Window, WindowBuilder},
 };
 use wry::{http::Request, WebView};
 
 pub static WINDOW_TITLE: &str = "Youtubby";
-pub static WINDOW_WIDTH: u32 = 896;
-pub static WINDOW_HEIGHT: u32 = 1536;
-pub static USER_AGENT: &str = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
+pub static WINDOW_WIDTH: u32 = 630;
+pub static WINDOW_HEIGHT: u32 = 1000;
+pub static USER_AGENT: &str = "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_6_1) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15";
+//pub static USER_AGENT: &str = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
+//pub static USER_AGENT: &str = "Mozilla/5.0 (iPhone; CPU iPhone OS 17_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/129.0.6668.46 Mobile/15E148 Safari/604.1";
 pub static URL: &str = "https://music.youtube.com";
 
-pub static WINDOW_SIZE: PhysicalSize<u32> = PhysicalSize::new(WINDOW_WIDTH, WINDOW_HEIGHT);
-pub static WINDOW_MIN_SIZE: LogicalSize<u32> = LogicalSize::new(320, 0);
+pub static WINDOW_SIZE: LogicalSize<u32> = LogicalSize::new(WINDOW_WIDTH, WINDOW_HEIGHT);
+//pub static WINDOW_MIN_SIZE: LogicalSize<u32> = LogicalSize::new(320, 0);
 
 pub struct WindowHandler {
     pub window: Window,
@@ -29,7 +31,6 @@ impl WindowHandler {
             WindowBuilder::new()
                 .with_title(WINDOW_TITLE)
                 .with_inner_size(WINDOW_SIZE)
-                .with_min_inner_size(WINDOW_MIN_SIZE)
                 .with_focused(true)
                 .with_visible(false)
                 .with_window_icon(crate::assets::window_icon().ok()),
