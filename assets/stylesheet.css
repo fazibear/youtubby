@@ -28,6 +28,15 @@ ytmusic-app-layout>[slot=mini-guide] {
   display: none !important;
 }
 
+ytmusic-app-layout>[slot=player-page] {
+  left: 0 !important;
+  width: 100% !important;
+}
+
+#mini-guide-background {
+  display: none !important;
+}
+
 .header-group {
   margin-left: 10px !important;
   max-width: 99% !important;
