@@ -1,4 +1,3 @@
-
 PREFIX := "target"
 BIN_NAME := "youtubby"
 APP_NAME := "Youtubby"

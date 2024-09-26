@@ -4,11 +4,13 @@ use log::info;
 use tao::window::Icon as WindowIcon;
 use tray_icon::Icon as TrayIcon;
 
-pub const INIT_SCRIPT: &str =
-concat!(
-    "document.addEventListener('load', () => {document.head.insertAdjacentHTML('beforeend',`<style>",
-    include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/assets/stylesheet.css")),
-    "</style>`);});\n",
+pub const INIT_SCRIPT: &str = concat!(
+    "let YoutubbyCustomCSS = `",
+    include_str!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/assets/stylesheet.css"
+    )),
+    "`;\n",
     include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/assets/scripts.js"))
 );
 
