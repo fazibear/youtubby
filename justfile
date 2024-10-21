@@ -26,7 +26,7 @@ release: build
 	cp -v assets/youtubby.icns {{RESOURCES_DIR}}/AppIcon.icns
 	cp -v assets/Info.plist {{CONTENTS_DIR}}
 
-open: release
+run: release
 	open {{APP_DIR}}
 
 

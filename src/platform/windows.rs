@@ -11,12 +11,12 @@ pub mod platform {
     };
     use wry::WebViewBuilder;
 
-    pub fn window_builder(window_builder: WindowBuilder) -> WindowBuilder {
-        window_builder
+    pub fn window_builder() -> WindowBuilder {
+        WindowBuilder::new()
     }
 
-    pub fn webview_builder(window: &Window) -> WebViewBuilder {
-        WebViewBuilder::new(window)
+    pub fn webview_build(window: &Window, builder: WebViewBuilder) -> wry::Result<WebView> {
+        builder.build(window)
     }
 
     pub fn init_event_loop(_event_loop: &mut EventLoop<PlayerStateChanged>) {}
