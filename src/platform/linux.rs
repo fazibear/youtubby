@@ -1,11 +1,11 @@
 pub mod platform {
     use crate::player_state_changed::PlayerStateChanged;
     use tao::{
-        event_loop::EventLoop,
+        event_loop::{ControlFlow, EventLoop},
         platform::unix::{WindowBuilderExtUnix, WindowExtUnix},
         window::{Window, WindowBuilder},
     };
-    use wry::{WebViewBuilder, WebViewBuilderExtUnix};
+    use wry::{WebView, WebViewBuilder, WebViewBuilderExtUnix};
 
     pub fn window_builder() -> WindowBuilder {
         WindowBuilder::new()
