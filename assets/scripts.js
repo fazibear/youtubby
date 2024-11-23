@@ -19,9 +19,7 @@ let Youtubby = function(){
       "seeked": (event) => postMessage({type: event.type}),
       "durationchange": (event) => postMessage({type: event.type, duration: document.getElementById('progress-bar').max}),
       "timeupdate": (event) => postMessage({type: event.type, time: document.getElementById('progress-bar').value}),
-      "emptied": (event) => {
-        postMessage({type: event.type})
-      },
+      "emptied": (event) => postMessage({type: event.type}),
       //"complete": (event) => postMessage({type: event.type}),
       "error": (event) => postMessage({type: event.type}),
       //"ended": (event) => postMessage({type: event.type}),
@@ -99,7 +97,12 @@ let Youtubby = function(){
     }
   }
 
+  let switchToAudio = () => {
+    document.getElementsByClassName("song-button")[0].click();
+  }
+
   return {
-    playPauseClick: playPauseClick
+    playPauseClick: playPauseClick,
+    switchToAudio: switchToAudio
   }
 }();

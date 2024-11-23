@@ -27,7 +27,10 @@ release: build
 	cp -v assets/Info.plist {{CONTENTS_DIR}}
 
 run: release
-	open {{APP_DIR}}
+  ./{{APP_BIN}}
+
+launch: release
+  open {{APP_DIR}}
 
 
 # OS := "macos"

@@ -1,6 +1,6 @@
 use crate::{
-    platform::platform, last_fm, player_state, player_state_changed::PlayerStateChanged, tray_handler, window_handler,
-    Youtubby,
+    last_fm, platform::platform, player_state, player_state_changed::PlayerStateChanged,
+    tray_handler, window_handler, Youtubby,
 };
 use anyhow::Result;
 use global_hotkey::{GlobalHotKeyEvent, HotKeyState};
@@ -20,43 +20,46 @@ pub fn callback(
     platform::set_control_flow(control_flow);
 
     match event {
-        Event::UserEvent(user_event) => {
-            match user_event {
-                PlayerStateChanged::Stop => {
-                    app.player_state.state = player_state::State::Stoped;
-                    tray_handler::refresh(app)?;
-                }
-                PlayerStateChanged::Pause => {
-                    app.player_state.state = player_state::State::Paused;
-                    tray_handler::refresh(app)?;
-                }
-                PlayerStateChanged::Emptied => {
-                    app.player_state.reset();
-                    tray_handler::refresh(app)?;
-                }
-                PlayerStateChanged::Play => {
-                    app.player_state.state = player_state::State::Playing;
-                    tray_handler::refresh(app)?;
-                }
-                PlayerStateChanged::LoadMetaData(metadata) => {
-                    app.player_state.metadata = metadata.clone();
-                    last_fm::track_update_now_playing(app)?;
-                    tray_handler::refresh(app)?;
-                }
-                PlayerStateChanged::MetaDataUpdate(metadata) => {
-                    app.player_state.metadata = metadata.clone();
-                    tray_handler::refresh(app)?;
-                }
-                PlayerStateChanged::TimeUpdate(time) => {
-                    app.player_state.position = Some(*time);
-                    last_fm::track_scrobble_at_half(app)?;
-                }
-                PlayerStateChanged::DurationChange(duration) => {
-                    app.player_state.duration = Some(*duration);
-                }
-                e => log::debug!("Unhandled PlayerState Event: {e:?}"),
+        Event::UserEvent(user_event) => match user_event {
+            PlayerStateChanged::Stop => {
+                app.player_state.state = player_state::State::Stoped;
+                tray_handler::refresh(app)?;
             }
-        }
+            PlayerStateChanged::Pause => {
+                app.player_state.state = player_state::State::Paused;
+                tray_handler::refresh(app)?;
+            }
+            PlayerStateChanged::Emptied => {
+                app.player_state.reset();
+                tray_handler::refresh(app)?;
+            }
+            PlayerStateChanged::Play => {
+                app.player_state.state = player_state::State::Playing;
+                tray_handler::refresh(app)?;
+            }
+            PlayerStateChanged::LoadMetaData(metadata) => {
+                app.player_state.metadata = metadata.clone();
+                if app.preferences.always_use_audio {
+                    app.window_handler
+                        .webview
+                        .evaluate_script("Youtubby.switchToAudio()")?;
+                }
+                last_fm::track_update_now_playing(app)?;
+                tray_handler::refresh(app)?;
+            }
+            PlayerStateChanged::MetaDataUpdate(metadata) => {
+                app.player_state.metadata = metadata.clone();
+                tray_handler::refresh(app)?;
+            }
+            PlayerStateChanged::TimeUpdate(time) => {
+                app.player_state.position = Some(*time);
+                last_fm::track_scrobble_at_half(app)?;
+            }
+            PlayerStateChanged::DurationChange(duration) => {
+                app.player_state.duration = Some(*duration);
+            }
+            e => log::debug!("Unhandled PlayerState Event: {e:?}"),
+        },
         Event::WindowEvent {
             event: WindowEvent::Focused(false),
             ..
@@ -127,6 +130,11 @@ pub fn callback(
                 last_fm::menu_click(app)?;
                 last_fm::set_menu(app);
                 app.preferences.save()?;
+            }
+            "always_use_audio" => {
+                app.preferences.always_use_audio = !app.preferences.always_use_audio;
+                app.preferences.save()?;
+                tray_handler::refresh(app)?;
             }
             e => debug!("MenuEvent: {e:?}"),
         }
