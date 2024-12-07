@@ -21,7 +21,7 @@ pub fn callback(
 
     match event {
         Event::UserEvent(user_event) => match user_event {
-            PlayerStateChanged::Stop => {
+            PlayerStateChanged::Ended => {
                 app.player_state.state = player_state::State::Stoped;
                 tray_handler::refresh(app)?;
             }

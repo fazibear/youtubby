@@ -14,16 +14,28 @@ let Youtubby = function(){
 
   let attachVideoEvents = function(video) {
     Object.entries({
-      "pause": (event) => postMessage({type: event.type}),
-      "play": (event) =>  postMessage({type: event.type}),
-      "seeked": (event) => postMessage({type: event.type}),
+      //"abort": (event) => postMessage({type: event.type}),
+      //"canplay": (event) => postMessage({type: event.type}),
+      //"canplaythrough": (event) => postMessage({type: event.type}),
       "durationchange": (event) => postMessage({type: event.type, duration: document.getElementById('progress-bar').max}),
-      "timeupdate": (event) => postMessage({type: event.type, time: document.getElementById('progress-bar').value}),
       "emptied": (event) => postMessage({type: event.type}),
-      //"complete": (event) => postMessage({type: event.type}),
-      "error": (event) => postMessage({type: event.type}),
-      //"ended": (event) => postMessage({type: event.type}),
-      "loadedmetadata": (event) => postMessage({type: event.type, metadata: metadata()})
+      "ended": (event) => postMessage({type: event.type}),
+      //"error": (event) => postMessage({type: event.type}),
+      //"loadeddata": (event) => postMessage({type: event.type}),
+      "loadedmetadata": (event) => postMessage({type: event.type, metadata: metadata()}),
+      //"loadstart": (event) => postMessage({type: event.type}),
+      "pause": (event) => postMessage({type: event.type}),
+      "play": (event) => postMessage({type: event.type}),
+      //"playing": (event) => postMessage({type: event.type}),
+      //"progress": (event) => postMessage({type: event.type}),
+      //"ratechange": (event) => postMessage({type: event.type}),
+      "seeked": (event) => postMessage({type: event.type}),
+      //"seeking": (event) => postMessage({type: event.type}),
+      //"stalled": (event) => postMessage({type: event.type}),
+      //"suspend": (event) => postMessage({type: event.type}),
+      "timeupdate": (event) => postMessage({type: event.type, time: document.getElementById('progress-bar').value}),
+      //"volumechange": (event) => postMessage({type: event.type}),
+      "waiting": (event) => postMessage({type: event.type}),
     }).forEach(([event, callback]) => video.addEventListener(event, callback));
   }
 

@@ -3,10 +3,32 @@ use anyhow::{Context, Error, Result};
 use serde_json::Value;
 use std::collections::HashMap;
 
+// abort
+// canplay
+// canplaythrough
+// durationchange
+// emptied
+// ended
+// error
+// loadeddata
+// loadedmetadata
+// loadstart
+// pause
+// play
+// playing
+// progress
+// ratechange
+// seeked
+// seeking
+// stalled
+// suspend
+// timeupdate
+// volumechange
+// waiting
 #[derive(Debug)]
 pub enum PlayerStateChanged {
     Play,
-    Stop,
+    Ended,
     Pause,
     Seeked,
     Emptied,
@@ -14,6 +36,7 @@ pub enum PlayerStateChanged {
     DurationChange(u64),
     Waiting,
     LoadMetaData(PlayerStateMetaData),
+    // custom event
     MetaDataUpdate(PlayerStateMetaData),
 }
 
@@ -22,12 +45,6 @@ impl PlayerStateChanged {
         let meta: HashMap<&str, Value> = serde_json::from_str(json)?;
 
         match meta.get("type").context("need type field")? {
-            Value::String(t) if t == "stop" => Ok(Self::Stop),
-            Value::String(t) if t == "pause" => Ok(Self::Pause),
-            Value::String(t) if t == "seeked" => Ok(Self::Seeked),
-            Value::String(t) if t == "waiting" => Ok(Self::Waiting),
-            Value::String(t) if t == "emptied" => Ok(Self::Emptied),
-            Value::String(t) if t == "play" => Ok(Self::Play),
             Value::String(t) if t == "durationchange" => {
                 if let Some(Value::Number(duration)) = meta.get("duration") {
                     if let Some(duration_as_int) = duration.as_u64() {
@@ -36,14 +53,8 @@ impl PlayerStateChanged {
                 }
                 Err(Error::msg("can't parse duration"))
             }
-            Value::String(t) if t == "timeupdate" => {
-                if let Some(Value::Number(time)) = meta.get("time") {
-                    if let Some(time_as_int) = time.as_u64() {
-                        return Ok(Self::TimeUpdate(time_as_int));
-                    }
-                }
-                Err(Error::msg("can't parse time"))
-            }
+            Value::String(t) if t == "emptied" => Ok(Self::Emptied),
+            Value::String(t) if t == "ended" => Ok(Self::Ended),
             Value::String(t) if t == "loadedmetadata" => {
                 if let Some(Value::Object(metadata)) = meta.get("metadata") {
                     return Ok(Self::LoadMetaData(PlayerStateMetaData {
@@ -54,6 +65,19 @@ impl PlayerStateChanged {
                 }
                 Err(Error::msg("can't parse metadata"))
             }
+            Value::String(t) if t == "pause" => Ok(Self::Pause),
+            Value::String(t) if t == "play" => Ok(Self::Play),
+            Value::String(t) if t == "seeked" => Ok(Self::Seeked),
+            Value::String(t) if t == "timeupdate" => {
+                if let Some(Value::Number(time)) = meta.get("time") {
+                    if let Some(time_as_int) = time.as_u64() {
+                        return Ok(Self::TimeUpdate(time_as_int));
+                    }
+                }
+                Err(Error::msg("can't parse time"))
+            }
+            Value::String(t) if t == "waiting" => Ok(Self::Waiting),
+
             Value::String(t) if t == "metadataupdate" => {
                 if let Some(Value::Object(metadata)) = meta.get("metadata") {
                     return Ok(Self::MetaDataUpdate(PlayerStateMetaData {
@@ -64,7 +88,6 @@ impl PlayerStateChanged {
                 }
                 Err(Error::msg("can't parse metadata"))
             }
-
             e => {
                 log::warn!("Missing event {:?}", e);
                 Err(Error::msg(format!("unknown event: {json}")))
