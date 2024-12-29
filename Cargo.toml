@@ -9,7 +9,7 @@ homepage = "https://youtubby.fazibear.me"
 
 [dependencies]
 wry = "0.47"
-tao = "0.30"
+tao = "0.31"
 tray-icon = "0.19"
 muda = "0.15"
 global-hotkey = "0.6"
