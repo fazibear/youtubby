@@ -25,7 +25,6 @@ impl WindowHandler {
             .with_window_icon(Some(Icon::from_rgba(icon, icon_width, icon_height)?))
             .build(event_loop)?;
 
-        let builder = WebViewBuilder::new(&window);
         let proxy = event_loop.create_proxy();
 
         let ipc = move |req: Request<String>| {
@@ -34,14 +33,14 @@ impl WindowHandler {
             }
         };
 
-        let webview = builder
+        let webview = WebViewBuilder::new()
             .with_user_agent(USER_AGENT)
             .with_url(URL)
             .with_devtools(true)
             .with_initialization_script(assets::INIT_SCRIPT)
             .with_ipc_handler(ipc)
             .with_autoplay(true)
-            .build()?;
+            .build(&window)?;
 
         Ok(WindowHandler { window, webview })
     }

@@ -32,7 +32,6 @@ impl WindowHandler {
             .with_window_icon(Some(Icon::from_rgba(icon, icon_width, icon_height)?));
 
         let window = event_loop.create_window(attributes)?;
-        let builder = WebViewBuilder::new();
         let proxy = event_loop.create_proxy();
 
         let ipc = move |req: Request<String>| {
@@ -41,7 +40,7 @@ impl WindowHandler {
             }
         };
 
-        let webview = builder
+        let webview = WebViewBuilder::new()
             .with_user_agent(USER_AGENT)
             .with_url(URL)
             .with_devtools(true)

@@ -28,10 +28,6 @@ impl WindowHandler {
             .with_window_icon(Some(Icon::from_rgba(icon, icon_width, icon_height)?))
             .build(event_loop)?;
 
-        let builder = {
-            let vbox = window.default_vbox().context("no default vbox")?;
-            WebViewBuilder::new_gtk(vbox)
-        };
         let proxy = event_loop.create_proxy();
 
         let ipc = move |req: Request<String>| {
@@ -40,6 +36,10 @@ impl WindowHandler {
             }
         };
 
+        let builder = {
+            let vbox = window.default_vbox().context("no default vbox")?;
+            WebViewBuilder::new_gtk(vbox)
+        };
         let webview = builder
             .with_user_agent(USER_AGENT)
             .with_url(URL)
