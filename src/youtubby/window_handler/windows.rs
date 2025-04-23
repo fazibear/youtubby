@@ -4,7 +4,7 @@ use crate::Youtubby::{
     window_handler::{URL, USER_AGENT, WINDOW_MIN_SIZE, WINDOW_SIZE},
 };
 use anyhow::Result;
-use winit::platform::windows::{WindowAttributesExtWindowsOs, WindowExtWindowsOs};
+use winit::platform::windows::{WindowAttributesExtWindows, WindowExtWindows};
 use winit::window::{Icon, Window, WindowAttributes};
 use wry::{http::Request, WebView, WebViewBuilder};
 
