@@ -22,7 +22,7 @@ use wry::dpi::{LogicalSize, PhysicalPosition, PhysicalSize};
 
 pub static WINDOW_WIDTH: u32 = 896;
 pub static WINDOW_HEIGHT: u32 = 1536;
-pub static USER_AGENT: &str = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
+pub static USER_AGENT: &str = "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_7_5) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.4 Safari/605.1.15";
 pub static URL: &str = "https://music.youtube.com";
 
 pub static WINDOW_SIZE: PhysicalSize<u32> = PhysicalSize::new(WINDOW_WIDTH, WINDOW_HEIGHT);

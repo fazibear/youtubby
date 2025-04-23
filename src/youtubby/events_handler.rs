@@ -7,18 +7,18 @@ use global_hotkey::{GlobalHotKeyEvent, HotKeyState};
 use log::debug;
 use muda::MenuEvent;
 use tray_icon::{MouseButton, MouseButtonState, TrayIconEvent, TrayIconId};
-use winit::{event::WindowEvent, event_loop::ControlFlow};
+use winit::{event::WindowEvent, event_loop::ActiveEventLoop};
 
 pub fn handle_window_events(
     app: &mut Youtubby,
     event: &WindowEvent,
-    control_flow: &mut ControlFlow,
+    event_loop: &ActiveEventLoop,
 ) -> Result<()> {
     match event {
         WindowEvent::Focused(false) if app.preferences.hide_unfocused_window => {
             app.window_handler.hide()
         }
-        WindowEvent::CloseRequested => exit(control_flow, app)?,
+        WindowEvent::CloseRequested => exit(event_loop, app)?,
         e => debug!("Event: {e:?}"),
     };
     Ok(())
@@ -27,7 +27,7 @@ pub fn handle_window_events(
 pub fn handle_user_events(
     app: &mut Youtubby,
     event: &PlayerStateChanged,
-    _control_flow: &mut ControlFlow,
+    _event_loop: &ActiveEventLoop,
 ) -> Result<()> {
     match event {
         PlayerStateChanged::Stop => {
@@ -67,7 +67,7 @@ pub fn handle_user_events(
     Ok(())
 }
 
-pub fn handle_hotkey_events(app: &mut Youtubby, _control_flow: &mut ControlFlow) -> Result<()> {
+pub fn handle_hotkey_events(app: &mut Youtubby, _event_loop: &ActiveEventLoop) -> Result<()> {
     if let Ok(event) = GlobalHotKeyEvent::receiver().try_recv() {
         match event {
             GlobalHotKeyEvent {
@@ -85,7 +85,7 @@ pub fn handle_hotkey_events(app: &mut Youtubby, _control_flow: &mut ControlFlow)
     Ok(())
 }
 
-pub fn handle_tray_events(app: &mut Youtubby, _control_flow: &mut ControlFlow) -> Result<()> {
+pub fn handle_tray_events(app: &mut Youtubby, _event_loop: &ActiveEventLoop) -> Result<()> {
     if let Ok(event) = TrayIconEvent::receiver().try_recv() {
         match event {
             TrayIconEvent::Click {
@@ -101,7 +101,7 @@ pub fn handle_tray_events(app: &mut Youtubby, _control_flow: &mut ControlFlow) -
     Ok(())
 }
 
-pub fn handle_menu_events(app: &mut Youtubby, control_flow: &mut ControlFlow) -> Result<()> {
+pub fn handle_menu_events(app: &mut Youtubby, event_loop: &ActiveEventLoop) -> Result<()> {
     if let Ok(event) = MenuEvent::receiver().try_recv() {
         match event.id.0.as_str() {
             "show" => app.window_handler.show(),
@@ -109,9 +109,15 @@ pub fn handle_menu_events(app: &mut Youtubby, control_flow: &mut ControlFlow) ->
                 .window_handler
                 .webview
                 .evaluate_script("Youtubby.playPauseClick()")?,
-            "next" => app.window_handler.webview.evaluate_script("")?,
-            "prev" => app.window_handler.webview.evaluate_script("")?,
-            "quit" => exit(control_flow, app)?,
+            "prev" => app
+                .window_handler
+                .webview
+                .evaluate_script("Youtubby.prev()")?,
+            "next" => app
+                .window_handler
+                .webview
+                .evaluate_script("Youtubby.next()")?,
+            "quit" => exit(event_loop, app)?,
             "always_on_top" => {
                 app.preferences.always_on_top = !app.preferences.always_on_top;
                 app.preferences.save()?;
@@ -141,8 +147,8 @@ pub fn handle_menu_events(app: &mut Youtubby, control_flow: &mut ControlFlow) ->
     Ok(())
 }
 
-fn exit(_control_flow: &mut ControlFlow, app: &Youtubby) -> Result<()> {
+fn exit(event_loop: &ActiveEventLoop, app: &Youtubby) -> Result<()> {
     app.preferences.save()?;
-    //exit!
+    event_loop.exit();
     Ok(())
 }

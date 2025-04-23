@@ -21,7 +21,7 @@ use tray_handler::TrayHandler;
 use window_handler::WindowHandler;
 use winit::{
     application::ApplicationHandler,
-    event::{DeviceEvent, DeviceId, WindowEvent},
+    event::WindowEvent,
     event_loop::{ActiveEventLoop, EventLoop},
     window::WindowId,
 };
@@ -47,25 +47,17 @@ impl ApplicationHandler<PlayerStateChanged> for Youtubby {
         _window_id: WindowId,
         event: WindowEvent,
     ) {
-        events_handler::handle_window_events(self, &event, &mut event_loop.control_flow()).unwrap();
+        events_handler::handle_window_events(self, &event, event_loop).unwrap();
     }
 
     fn user_event(&mut self, event_loop: &ActiveEventLoop, event: PlayerStateChanged) {
-        events_handler::handle_user_events(self, &event, &mut event_loop.control_flow()).unwrap();
-    }
-
-    fn device_event(
-        &mut self,
-        _event_loop: &ActiveEventLoop,
-        _device_id: DeviceId,
-        _event: DeviceEvent,
-    ) {
+        events_handler::handle_user_events(self, &event, event_loop).unwrap();
     }
 
     fn about_to_wait(&mut self, event_loop: &ActiveEventLoop) {
-        events_handler::handle_menu_events(self, &mut event_loop.control_flow()).unwrap();
-        events_handler::handle_tray_events(self, &mut event_loop.control_flow()).unwrap();
-        events_handler::handle_hotkey_events(self, &mut event_loop.control_flow()).unwrap();
+        events_handler::handle_menu_events(self, event_loop).unwrap();
+        events_handler::handle_tray_events(self, event_loop).unwrap();
+        events_handler::handle_hotkey_events(self, event_loop).unwrap();
     }
 }
 
@@ -104,20 +96,20 @@ impl Youtubby {
         Ok(app)
     }
 
-    #[cfg(build = "release")]
     fn init_logger() -> Result<()> {
         SimpleLogger::new()
-            .with_level(log::LevelFilter::Off)
+            .with_level(
+                #[cfg(not(debug_assertions))]
+                {
+                    log::LevelFilter::Off
+                },
+                #[cfg(debug_assertions)]
+                {
+                    log::LevelFilter::Info
+                },
+            )
             .init()?;
 
-        Ok(())
-    }
-
-    #[cfg(not(build = "release"))]
-    fn init_logger() -> Result<()> {
-        SimpleLogger::new()
-            .with_level(log::LevelFilter::Info)
-            .init()?;
         Ok(())
     }
 }

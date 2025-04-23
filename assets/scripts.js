@@ -80,6 +80,14 @@ let Youtubby = function(){
     }
   }
 
+  let prev = () => {
+    document.querySelector(".previous-button").click();
+  }
+
+  let next = () => {
+    document.querySelector(".next-button").click();
+  }
+
   let playPause = () => {// #top-player-bar
     document.getElementById('play-pause-button').click();
   }

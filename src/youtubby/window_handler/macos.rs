@@ -5,7 +5,7 @@ use crate::youtubby::{
     YoutubbyEventLoop,
 };
 use anyhow::Result;
-use winit::platform::macos::{WindowAttributesExtMacOS, WindowExtMacOS};
+use winit::platform::macos::WindowAttributesExtMacOS;
 use winit::window::{Icon, Window, WindowAttributes};
 use wry::{http::Request, WebView, WebViewBuilder};
 
@@ -28,11 +28,11 @@ impl WindowHandler {
             .with_title_hidden(true)
             .with_titlebar_buttons_hidden(true)
             .with_visible(false)
-            //.with_focused(true)
+            .with_active(true)
             .with_window_icon(Some(Icon::from_rgba(icon, icon_width, icon_height)?));
 
         let window = event_loop.create_window(attributes)?;
-        let builder = WebViewBuilder::new(&window);
+        let builder = WebViewBuilder::new();
         let proxy = event_loop.create_proxy();
 
         let ipc = move |req: Request<String>| {
@@ -48,7 +48,7 @@ impl WindowHandler {
             .with_initialization_script(assets::INIT_SCRIPT)
             .with_ipc_handler(ipc)
             .with_autoplay(true)
-            .build()?;
+            .build(&window)?;
 
         Ok(WindowHandler { window, webview })
     }
