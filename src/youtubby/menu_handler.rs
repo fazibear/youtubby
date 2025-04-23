@@ -67,7 +67,7 @@ impl MenuHandler {
         };
 
         menu.append_items(&[
-            &MenuItem::with_id(MenuId::new("show"), "Show", true, None),
+            &MenuItem::with_id(MenuId::new("show_hide"), "Show/Hide", true, None),
             &MenuItem::with_id(MenuId::new("playstop"), "Play/Stop", true, None),
             &MenuItem::with_id(MenuId::new("next"), "Next Song", true, None),
             &MenuItem::with_id(MenuId::new("prev"), "Previous Song", true, None),

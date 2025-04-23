@@ -94,7 +94,7 @@ pub fn handle_tray_events(app: &mut Youtubby, _event_loop: &ActiveEventLoop) -> 
                 button_state: MouseButtonState::Down,
                 rect,
                 ..
-            } if id == "0" => app.window_handler.show_hide(rect.position),
+            } if id == "0" => app.window_handler.show_hide(Some(rect.position)),
             e => debug!("TrayIconEvent: {e:?}"),
         }
     }
@@ -104,7 +104,7 @@ pub fn handle_tray_events(app: &mut Youtubby, _event_loop: &ActiveEventLoop) -> 
 pub fn handle_menu_events(app: &mut Youtubby, event_loop: &ActiveEventLoop) -> Result<()> {
     if let Ok(event) = MenuEvent::receiver().try_recv() {
         match event.id.0.as_str() {
-            "show" => app.window_handler.show(),
+            "show_hide" => app.window_handler.show_hide(None),
             "playstop" => app
                 .window_handler
                 .webview

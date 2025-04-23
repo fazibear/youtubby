@@ -29,11 +29,13 @@ pub static WINDOW_SIZE: PhysicalSize<u32> = PhysicalSize::new(WINDOW_WIDTH, WIND
 pub static WINDOW_MIN_SIZE: LogicalSize<u32> = LogicalSize::new(320, 0);
 
 impl WindowHandler {
-    pub fn show_hide(&self, position: PhysicalPosition<f64>) {
+    pub fn show_hide(&self, position: Option<PhysicalPosition<f64>>) {
         if self.window.is_visible().unwrap_or(false) {
             self.hide();
         } else {
-            self.set_position(position);
+            if let Some(position) = position {
+                self.set_position(position);
+            }
             self.show();
         }
     }
