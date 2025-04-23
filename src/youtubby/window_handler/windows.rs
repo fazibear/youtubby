@@ -22,9 +22,8 @@ impl WindowHandler {
             .with_inner_size(WINDOW_SIZE)
             .with_min_inner_size(WINDOW_MIN_SIZE)
             .with_visible(false)
-            .//with_focused(true)
-            .with_window_icon(Some(Icon::from_rgba(icon, icon_width, icon_height)?))
-            .build(event_loop)?;
+            //.with_focused(true)
+            .with_window_icon(Some(Icon::from_rgba(icon, icon_width, icon_height)?));
 
         let window = event_loop.create_window(attributes)?;
         let proxy = event_loop.create_proxy();
