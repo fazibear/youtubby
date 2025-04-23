@@ -8,15 +8,15 @@ homepage = "https://youtubby.fazibear.me"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-wry = "0.47"
-tao = "0.31"
-tray-icon = "0.19"
-muda = "0.15"
+wry = "0.51"
+tao = "0.33"
+tray-icon = "0.20"
+muda = "0.16"
 global-hotkey = "0.6"
 image = "0.25"
 serde_json = "1.0"
 serde = "1.0"
-directories = "5.0"
+directories = "6.0"
 reqwest = { version = "0.12", features = ["blocking"] }
 url = "2.5"
 md5 = "0.7"
