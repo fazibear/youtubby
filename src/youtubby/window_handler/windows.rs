@@ -1,7 +1,8 @@
-use crate::Youtubby::{
+use crate::youtubby::{
     assets,
     player_state_changed::PlayerStateChanged,
     window_handler::{URL, USER_AGENT, WINDOW_MIN_SIZE, WINDOW_SIZE},
+    YoutubbyEventLoop,
 };
 use anyhow::Result;
 use winit::platform::windows::{WindowAttributesExtWindows, WindowExtWindows};
