@@ -47,19 +47,24 @@ pub fn refresh(app: &mut Youtubby) -> Result<()> {
 }
 
 pub fn player_info(state: &PlayerState) -> Option<String> {
-    let icon = match state.state {
-        player_state::State::Playing => "󰐊",
-        player_state::State::Paused => "󰏤",
-        player_state::State::Stoped => "󰓛",
-    };
+    // let icon = match state.state {
+    //     player_state::State::Playing => "󰐊",
+    //     player_state::State::Paused => "󰏤",
+    //     player_state::State::Stoped => "󰓛",
+    // };
 
-    if let PlayerStateMetaData {
-        artist: Some(ref artist),
-        track: Some(ref track),
+    if let PlayerState {
+        metadata:
+            PlayerStateMetaData {
+                artist: Some(ref artist),
+                track: Some(ref track),
+                ..
+            },
+        state: player_state::State::Playing,
         ..
-    } = state.metadata
+    } = state
     {
-        let info = format!("{icon} {artist} - {track}");
+        let info = format!("{artist} - {track}");
 
         if info.chars().count() > MAX_PLAYER_INFO_STRING_LENGTH {
             let short = truncate(&info, MAX_PLAYER_INFO_STRING_LENGTH);
