@@ -14,18 +14,28 @@ let Youtubby = function(){
 
   let attachVideoEvents = function(video) {
     Object.entries({
-      "pause": (event) => postMessage({type: event.type}),
-      "play": (event) =>  postMessage({type: event.type}),
-      "seeked": (event) => postMessage({type: event.type}),
+      //"abort": (event) => postMessage({type: event.type}),
+      //"canplay": (event) => postMessage({type: event.type}),
+      //"canplaythrough": (event) => postMessage({type: event.type}),
       "durationchange": (event) => postMessage({type: event.type, duration: document.getElementById('progress-bar').max}),
+      "emptied": (event) => postMessage({type: event.type}),
+      "ended": (event) => postMessage({type: event.type}),
+      //"error": (event) => postMessage({type: event.type}),
+      //"loadeddata": (event) => postMessage({type: event.type}),
+      "loadedmetadata": (event) => postMessage({type: event.type, metadata: metadata()}),
+      //"loadstart": (event) => postMessage({type: event.type}),
+      "pause": (event) => postMessage({type: event.type}),
+      "play": (event) => postMessage({type: event.type}),
+      //"playing": (event) => postMessage({type: event.type}),
+      //"progress": (event) => postMessage({type: event.type}),
+      //"ratechange": (event) => postMessage({type: event.type}),
+      "seeked": (event) => postMessage({type: event.type}),
+      //"seeking": (event) => postMessage({type: event.type}),
+      //"stalled": (event) => postMessage({type: event.type}),
+      //"suspend": (event) => postMessage({type: event.type}),
       "timeupdate": (event) => postMessage({type: event.type, time: document.getElementById('progress-bar').value}),
-      "emptied": (event) => {
-        postMessage({type: event.type})
-      },
-      //"complete": (event) => postMessage({type: event.type}),
-      "error": (event) => postMessage({type: event.type}),
-      //"ended": (event) => postMessage({type: event.type}),
-      "loadedmetadata": (event) => postMessage({type: event.type, metadata: metadata()})
+      //"volumechange": (event) => postMessage({type: event.type}),
+      "waiting": (event) => postMessage({type: event.type}),
     }).forEach(([event, callback]) => video.addEventListener(event, callback));
   }
 
@@ -47,7 +57,7 @@ let Youtubby = function(){
   var findAndAttachVideoEvents = function() {
     video = document.querySelector("video");
     if (!video){
-      return setTimeout(init, 250);
+      return setTimeout(findAndAttachVideoEvents, 250);
     }else{
       attachVideoEvents(video);
       video.parentNode.addEventListener('DOMNodeInserted', function(e) {
@@ -56,12 +66,19 @@ let Youtubby = function(){
     };
   }
 
-  let init = function() {
+  var loadCustomCSS = function() {
+    var cssStyle = document.createElement('style');
+    cssStyle.type = 'text/css';
+    var rules = document.createTextNode(YoutubbyCustomCSS);
+    cssStyle.appendChild(rules);
+    document.querySelector('head').appendChild(cssStyle);
+  }
+
+  window.addEventListener("load", function() {
+    loadCustomCSS();
     findAndAttachVideoEvents();
     attachMetaDataUpdate();
-  };
-
-  window.addEventListener("load", init);
+  });
 
   let playSomething = () => {
     let xpath = "//span[text()='Play all']";
@@ -100,28 +117,12 @@ let Youtubby = function(){
     }
   }
 
+  let switchToAudio = () => {
+    document.getElementsByClassName("song-button")[0].click();
+  }
+
   return {
-    playPauseClick: playPauseClick
+    playPauseClick: playPauseClick,
+    switchToAudio: switchToAudio
   }
 }();
-
-// function FixBottomPlayer(event) {
-//   if((event.target.innerWidth || window.innerWidth) < 640) {
-//     console.log(event.target.innerWidth || window.innerWidth);
-//     document.querySelector('ytmusic-player-bar.ytmusic-app').removeAttribute('is-mweb-player-bar-modernization-enabled');
-//     document.querySelector('ytmusic-player-bar.ytmusic-app>#left-controls').style.display = "none";
-//     document.querySelector('ytmusic-player-bar.ytmusic-app>#right-controls').style.display = "none";
-//     document.querySelector('ytmusic-player-bar.ytmusic-app>#right-controls-mweb').style.display = "flex";
-//     document.querySelector('ytmusic-player-bar.ytmusic-app button[aria-label="Action menu"]').style.display = "none";
-//   }else{
-//     document.querySelector('ytmusic-player-bar.ytmusic-app>#left-controls').style.display = "";
-//     document.querySelector('ytmusic-player-bar.ytmusic-app>#right-controls').style.display = "";
-//     document.querySelector('ytmusic-player-bar.ytmusic-app button').style.display = "";
-//     document.querySelector('ytmusic-player-bar.ytmusic-app>#right-controls-mweb').style.display = "none";
-//     document.querySelector('ytmusic-player-bar.ytmusic-app button[aria-label="Action menu"]').style.display = "";
-//   }
-// }
-//
-// //window.addEventListener("load", FixBottomPlayer);
-// window.addEventListener("resize", FixBottomPlayer);
-//
