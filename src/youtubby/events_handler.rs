@@ -48,6 +48,11 @@ pub fn handle_user_events(
         }
         PlayerStateChanged::LoadMetaData(metadata) => {
             app.player_state.metadata = metadata.clone();
+            if app.preferences.always_use_audio {
+                app.window_handler
+                    .webview
+                    .evaluate_script("Youtubby.switchToAudio()")?;
+            }
             last_fm::track_update_now_playing(app)?;
             tray_handler::refresh(app)?;
         }

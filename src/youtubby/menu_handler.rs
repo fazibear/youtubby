@@ -42,6 +42,13 @@ impl MenuHandler {
                 preferences.show_info_in_tooltip,
                 None,
             ),
+            &CheckMenuItem::with_id(
+                "always_use_audio",
+                "Always use audio stream",
+                true,
+                preferences.always_use_audio,
+                None,
+            ),
         ])?;
 
         let last_fm = Submenu::new("Last.fm", true);

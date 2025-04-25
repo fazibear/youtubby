@@ -14,6 +14,7 @@ pub struct Preferences {
     pub hide_unfocused_window: bool,
     pub always_on_top: bool,
     pub last_fm: last_fm::State,
+    pub always_use_audio: bool,
 }
 
 impl Preferences {
@@ -24,6 +25,7 @@ impl Preferences {
             hide_unfocused_window: true,
             always_on_top: true,
             last_fm: last_fm::State::None,
+            always_use_audio: false,
         }
     }
 
