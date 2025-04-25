@@ -113,7 +113,7 @@ pub fn handle_menu_events(app: &mut Youtubby, event_loop: &ActiveEventLoop) -> R
             "playstop" => app
                 .window_handler
                 .webview
-                .evaluate_script("Youtubby.playPauseClick()")?,
+                .evaluate_script("Youtubby.playPause()")?,
             "prev" => app
                 .window_handler
                 .webview
@@ -138,6 +138,11 @@ pub fn handle_menu_events(app: &mut Youtubby, event_loop: &ActiveEventLoop) -> R
             }
             "show_info_in_tooltip" => {
                 app.preferences.show_info_in_tooltip = !app.preferences.show_info_in_tooltip;
+                app.preferences.save()?;
+                tray_handler::refresh(app)?;
+            }
+            "always_use_audio" => {
+                app.preferences.always_use_audio = !app.preferences.always_use_audio;
                 app.preferences.save()?;
                 tray_handler::refresh(app)?;
             }

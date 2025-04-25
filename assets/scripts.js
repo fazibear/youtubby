@@ -97,21 +97,21 @@ let Youtubby = function(){
     }
   }
 
-  let prev = () => {
+  let prevButtonClick = () => {
     document.querySelector(".previous-button").click();
   }
 
-  let next = () => {
+  let nextButtonClick = () => {
     document.querySelector(".next-button").click();
   }
 
-  let playPause = () => {// #top-player-bar
+  let playPauseButtonClick = () => {// #top-player-bar
     document.getElementById('play-pause-button').click();
   }
 
-  let playPauseClick = () => {
+  let playPause = () => {
     if(document.getElementById('layout').getAttributeNames().includes('player-visible')){
-      playPause();
+      playPauseButtonClick();
     }else{
       playSomething();
     }
@@ -122,7 +122,9 @@ let Youtubby = function(){
   }
 
   return {
-    playPauseClick: playPauseClick,
+    playPause: playPause,
+    prev: prevButtonClick,
+    next: nextButtonClick,
     switchToAudio: switchToAudio
   }
 }();

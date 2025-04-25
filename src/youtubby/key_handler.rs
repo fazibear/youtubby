@@ -30,9 +30,9 @@ impl KeyHandler {
                 HotKey::new(modifiers, Code::MediaPlay)
             }
         };
-        self.register_key(play_pause_key, "Youtubby.playPauseClick()");
-        //self.register_key(HotKey::new(modifiers, Code::MediaTrackNext), "");
-        //self.register_key(HotKey::new(modifiers, Code::MediaTrackPrevious), "");
+        self.register_key(play_pause_key, "Youtubby.playPause()");
+        // self.register_key(HotKey::new(modifiers, Code::MediaTrackNext), "");
+        // self.register_key(HotKey::new(modifiers, Code::MediaTrackPrevious), "");
         self
     }
 
