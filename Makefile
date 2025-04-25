@@ -36,7 +36,6 @@ osx-bin:
 	cargo rustc --release
 
 osx-app: osx-bin
-
 	rm -rf ${APP_DIR}
 	mkdir -p ${CONTENTS_DIR}
 	mkdir -p ${MACOS_DIR}
