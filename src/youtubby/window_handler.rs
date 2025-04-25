@@ -18,14 +18,14 @@ pub use macos::WindowHandler;
 
 use super::Youtubby;
 use anyhow::Result;
-use wry::dpi::{LogicalSize, PhysicalPosition, PhysicalSize};
+use wry::dpi::{LogicalSize, PhysicalPosition};
 
-pub static WINDOW_WIDTH: u32 = 896;
-pub static WINDOW_HEIGHT: u32 = 1536;
+pub static WINDOW_WIDTH: u32 = 630;
+pub static WINDOW_HEIGHT: u32 = 1000;
 pub static USER_AGENT: &str = "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_7_5) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.4 Safari/605.1.15";
 pub static URL: &str = "https://music.youtube.com";
 
-pub static WINDOW_SIZE: PhysicalSize<u32> = PhysicalSize::new(WINDOW_WIDTH, WINDOW_HEIGHT);
+pub static WINDOW_SIZE: LogicalSize<u32> = LogicalSize::new(WINDOW_WIDTH, WINDOW_HEIGHT);
 pub static WINDOW_MIN_SIZE: LogicalSize<u32> = LogicalSize::new(320, 0);
 
 impl WindowHandler {
