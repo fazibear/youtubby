@@ -4,7 +4,12 @@
 > For a long time I was looking for desktop Youtube Music Player. With all of them was always something that pissed me off.
 > So I write my own. Yep it's in Rust BTW!
 
-[WIP] It's early stage... Right now I'm focusing on MacOS to make it usable as daily driver.
+> [!IMPORTANT]
+> It's early stage... Right now I'm focusing on MacOS to make it usable as daily driver.
+
+> [!WARNING]  
+> There is a weird bug on OSX related to WebKit. After a random time Youtubby starts crackling.
+> Did't check other platforms.
 
 Goals:
 - MacOS support
