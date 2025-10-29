@@ -13,6 +13,7 @@ clean:
 	cargo clean --release
 
 build-osx:
+  cargo check --frozen --release
   cargo rustc --frozen --release
 
 release-osx: build-osx
@@ -32,6 +33,8 @@ run-osx: release-osx
 launch-osx: release-osx
   open {{APP_DIR}}
 
+install-osx: release-osx
+  cp -r {{APP_BIN}} ~/Applications
 
 # OS := "macos"
 # MACHINE := x86_64
