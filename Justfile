@@ -34,7 +34,7 @@ launch-osx: release-osx
   open {{APP_DIR}}
 
 install-osx: release-osx
-  cp -r {{APP_BIN}} ~/Applications
+  cp -r {{APP_DIR}} ~/Applications
 
 # OS := "macos"
 # MACHINE := x86_64
