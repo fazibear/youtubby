@@ -11,6 +11,10 @@ body {
   overflow: auto auto !important;
 }
 
+body::-webkit-scrollbar {
+  background-color: #00000000;
+}
+
 ytmusic-carousel-shelf-renderer {
   margin-bottom: 0 !important;
 }
